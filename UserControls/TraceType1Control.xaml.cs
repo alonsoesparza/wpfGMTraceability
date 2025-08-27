@@ -70,7 +70,7 @@ namespace wpfGMTraceability.UserControls
             var APIresponse = "";
             try
             {
-                APIresponse = await ApiCheckSerialService.GetFromApiAsync<string>($@"{App.APIUrlCheckSerial}{serial}");
+                APIresponse = await ApiCheckSerialService.GetFromApiAsync<string>($@"{App.APIUrlCheckSerial}{serial.Trim()}");
             }
             catch (Exception ex)
             {

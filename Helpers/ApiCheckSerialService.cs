@@ -18,6 +18,9 @@ namespace wpfGMTraceability.Helpers
                 var response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
 
+                //****Validar conexion y estado de la respuesta
+                //response.StatusCode.ToString();
+
                 var json = await response.Content.ReadAsStringAsync();
                 var result = System.Text.Json.JsonSerializer.Deserialize<T>(json, new System.Text.Json.JsonSerializerOptions
                 {
