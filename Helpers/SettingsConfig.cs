@@ -9,6 +9,9 @@ namespace wpfGMTraceability.Helpers
     public class SettingsConfig
     {
         public string APIUrl { get; set; }
+        public string APILoadBOMUrl { get; set; }
+        public string APIBoxRequestUrl { get; set; }
+        public string APISerialConsumeUrl { get; set; }
         public string TraceType { get; set; }
     }
 }

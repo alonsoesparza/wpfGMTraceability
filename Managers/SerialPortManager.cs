@@ -26,7 +26,7 @@ namespace wpfGMTraceability.Managers
         {
             if (string.IsNullOrWhiteSpace(portName))
             {
-                App.SerialPortStatusMessage = $"Error al abrir el puerto";
+                SettingsManager.SerialPortStatusMessage = $"Error al abrir el puerto";
                 return;
             }
             _port = new SerialPort
@@ -48,16 +48,16 @@ namespace wpfGMTraceability.Managers
         {
             try
             {
-                if (_port != null) { _port.Open(); } else {                     
-                    App.SerialPortStatusMessage = $"Error al abrir el puerto: Configuración inválida.";
+                if (_port != null) { _port.Open(); } else {
+                    SettingsManager.SerialPortStatusMessage = $"Error al abrir el puerto: Configuración inválida.";
                     return;
                 }
 
-                App.SerialPortStatusMessage = $"Puerto {_port.PortName} abierto correctamente.";
+                SettingsManager.SerialPortStatusMessage = $"Puerto {_port.PortName} abierto correctamente.";
             }
             catch (System.IO.IOException ex)
             {
-                App.SerialPortStatusMessage = $"Error al abrir el puerto: {ex.Message}";
+                SettingsManager.SerialPortStatusMessage = $"Error al abrir el puerto: {ex.Message}";
                 //En caso que se requiera iniciar una reconexion automática
                 //StartReconnectTimer();
             }
@@ -88,7 +88,7 @@ namespace wpfGMTraceability.Managers
             }
             catch (Exception ex)
             {
-                App.SerialPortStatusMessage = $"Error: {ex.Message}";
+                SettingsManager.SerialPortStatusMessage = $"Error: {ex.Message}";
             }
         }
         private void OnErrorReceived(object sender, SerialErrorReceivedEventArgs e)
@@ -119,12 +119,12 @@ namespace wpfGMTraceability.Managers
                 if (_port?.IsOpen == true)
                 {
                     _reconnectTimer?.Dispose();
-                    App.SerialPortStatusMessage = "Reconexion exitosa.";
+                    SettingsManager.SerialPortStatusMessage = "Reconexion exitosa.";
                 }
             }
             catch (Exception ex)
             {
-                App.SerialPortStatusMessage = $"Fallo la reconexión: {ex.Message}";
+                SettingsManager.SerialPortStatusMessage = $"Fallo la reconexión: {ex.Message}";
                 // El timer jala de nuevo
             }
         }

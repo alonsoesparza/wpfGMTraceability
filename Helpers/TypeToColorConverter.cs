@@ -15,9 +15,9 @@ namespace wpfGMTraceability.Helpers
             else if (Type == "Warning")
                 return Brushes.Orange;
             else if (Type == "Info")
-                return Brushes.Green;
+                return Brushes.SkyBlue;
             else
-                return Brushes.Gray;
+                return Brushes.Green;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

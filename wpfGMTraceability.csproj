@@ -113,13 +113,20 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\ApiCheckSerialService.cs" />
+    <Compile Include="Helpers\IMainWindowHost.cs" />
+    <Compile Include="Helpers\IOverlayAware.cs" />
     <Compile Include="Helpers\SerialPortConfig.cs" />
+    <Compile Include="Helpers\SettingsManager.cs" />
     <Compile Include="Helpers\TypeToColorConverter.cs" />
     <Compile Include="Helpers\TypeToIconConverter.cs" />
     <Compile Include="Managers\DualSerialManager.cs" />
     <Compile Include="Models\ScanLogItem.cs" />
+    <Compile Include="Models\StationConnector.cs" />
     <Compile Include="UserControls\TraceType1Control.xaml.cs">
       <DependentUpon>TraceType1Control.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\TraceType2Control.xaml.cs">
+      <DependentUpon>TraceType2Control.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
@@ -147,6 +154,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UserControls\TraceType1Control.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\TraceType2Control.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

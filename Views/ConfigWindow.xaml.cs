@@ -59,14 +59,17 @@ namespace wpfGMTraceability.Views
             var configSettings = new SettingsConfig
             {
                 APIUrl = (txtAPIUrl.Text == null) ? "http://localhost/" : txtAPIUrl.Text.Trim().ToString(),
+                APILoadBOMUrl = (txtAPIBOMUrl.Text == null) ? "http://localhost/" : txtAPIBOMUrl.Text.Trim().ToString(),
+                APIBoxRequestUrl = (txtAPIRequestBoxUrl.Text == null) ? "http://localhost/" : txtAPIRequestBoxUrl.Text.Trim().ToString(),
+                APISerialConsumeUrl = (txtAPIConsumeUrl.Text == null) ? "http://localhost/" : txtAPIConsumeUrl.Text.Trim().ToString(),
                 TraceType = valTypeTrace.ToString()
             };
 
             var jsonSettings = JsonConvert.SerializeObject(configSettings, Formatting.Indented);
-            System.IO.File.WriteAllText(App.ConfigSettingsFilePath, jsonSettings);
+            System.IO.File.WriteAllText(SettingsManager.ConfigSettingsFilePath, jsonSettings);
 
             var jsonPorts = JsonConvert.SerializeObject(configPorts, Formatting.Indented);
-            System.IO.File.WriteAllText(App.ConfigPortsFilePath, jsonPorts);
+            System.IO.File.WriteAllText(SettingsManager.ConfigPortsFilePath, jsonPorts);
 
             try
             {
@@ -101,13 +104,16 @@ namespace wpfGMTraceability.Views
             try
             {
                 SettingsConfig _config;
-                var json = System.IO.File.ReadAllText(App.ConfigSettingsFilePath);
+                var json = System.IO.File.ReadAllText(SettingsManager.ConfigSettingsFilePath);
                 _config = JsonConvert.DeserializeObject<SettingsConfig>(json);
                 txtAPIUrl.Text = _config.APIUrl;
                 cbTraceType.Text = _config.TraceType;
+                txtAPIBOMUrl.Text = _config.APILoadBOMUrl;
+                txtAPIRequestBoxUrl.Text = _config.APIBoxRequestUrl;
+                txtAPIConsumeUrl.Text = _config.APISerialConsumeUrl;
 
                 SerialPortConfig _configPorts;
-                var jsonPorts = System.IO.File.ReadAllText(App.ConfigPortsFilePath);
+                var jsonPorts = System.IO.File.ReadAllText(SettingsManager.ConfigPortsFilePath);
                 _configPorts = JsonConvert.DeserializeObject<SerialPortConfig>(jsonPorts);
                 cbInPort.SelectedItem = _configPorts.ReadPort;
                 cbOutPort.SelectedItem = _configPorts.WritePort;                

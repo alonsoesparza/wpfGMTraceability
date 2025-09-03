@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using wpfGMTraceability.Helpers;
 using wpfGMTraceability.Managers;
 using wpfGMTraceability.UserControls;
@@ -18,10 +19,9 @@ namespace wpfGMTraceability
         {
             InitializeComponent();
         }
-
         private void Main_Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!File.Exists(App.ConfigPortsFilePath))
+            if (!File.Exists(SettingsManager.ConfigPortsFilePath))
             {
                 var configWindow = new ConfigWindow(); // Tu ventana de configuración
                 bool? result = configWindow.ShowDialog();
@@ -36,10 +36,13 @@ namespace wpfGMTraceability
 
             //*******Load Settings Config********
             SettingsConfig _config;
-            var json = System.IO.File.ReadAllText(App.ConfigSettingsFilePath);
+            var json = System.IO.File.ReadAllText(SettingsManager.ConfigSettingsFilePath);
             _config = JsonConvert.DeserializeObject<SettingsConfig>(json);
-            App.APIUrlCheckSerial = _config.APIUrl;
-            App.TraceType = _config.TraceType;
+            SettingsManager.APIUrlCheckSerial = _config.APIUrl;
+            SettingsManager.TraceType = _config.TraceType;
+            SettingsManager.APILoadBOMUrl = _config.APILoadBOMUrl;
+            SettingsManager.APIRequestBoxUrl = _config.APIBoxRequestUrl;
+            SettingsManager.APIConsumeSerialUrl = _config.APISerialConsumeUrl;
 
             //*******Load Ports Config********
             _dual = new DualSerialManager();
@@ -47,8 +50,35 @@ namespace wpfGMTraceability
 
             try
             {
+                UserControl myUsrCtrl = null;
                 _dual.Start();
-                RenderPages.Children.Add(new TraceType1Control(_dual));
+
+                switch (SettingsManager.TraceType)
+                {
+                    case "Tipo 1":
+                        //Title = "GM Traceability - Tipo 1";
+                        myUsrCtrl = new TraceType1Control(_dual);
+                        break;
+                    case "Tipo 2":
+                        //Title = "GM Traceability - Tipo 1";
+                        myUsrCtrl = new TraceType2Control(_dual);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                if (myUsrCtrl != null)
+                {
+                    if (myUsrCtrl is IOverlayAware overlayAware)
+                    {
+                        overlayAware.ShowLoadOverlay += (s, ee) => LoadingOverlay.Visibility = Visibility.Visible;
+                        overlayAware.HideLoadOverlay += (s, ee) => LoadingOverlay.Visibility = Visibility.Collapsed;
+                    }
+
+                    RenderPages.Children.Add(myUsrCtrl);
+                }
+
             }
             catch (System.IO.IOException exIO)
             {
@@ -76,7 +106,6 @@ namespace wpfGMTraceability
             OverlayOscuro.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
         }
         #endregion
-
         private void Main_Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _dual.Stop();

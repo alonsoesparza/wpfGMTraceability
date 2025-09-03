@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -15,11 +16,15 @@ namespace wpfGMTraceability.UserControls
     /// <summary>
     /// Interaction logic for TraceType1Control.xaml
     /// </summary>
-    public partial class TraceType1Control : UserControl
+    public partial class TraceType1Control : UserControl, IOverlayAware
     {
         private readonly DualSerialManager _serialManager;
         ObservableCollection<ScanLogItem> logItems = new ObservableCollection<ScanLogItem>();
         DispatcherTimer cleanTimer;
+
+        public event EventHandler ShowLoadOverlay;
+        public event EventHandler HideLoadOverlay;
+
         public TraceType1Control(DualSerialManager _dualManager)
         {
             InitializeComponent();
@@ -28,7 +33,6 @@ namespace wpfGMTraceability.UserControls
         }
         private void TraceType1_Control_Loaded(object sender, RoutedEventArgs e)
         {
-            //txtStatusCard.Text = App.SerialPortStatusMessage;
             lbLog.ItemsSource = logItems;
 
             cleanTimer = new DispatcherTimer
@@ -67,38 +71,45 @@ namespace wpfGMTraceability.UserControls
         #region Local Methods
         private async void CheckSerialNumber(string serial)
         {
-            var APIresponse = "";
             try
             {
-                APIresponse = await ApiCheckSerialService.GetFromApiAsync<string>($@"{App.APIUrlCheckSerial}{serial.Trim()}");
+                ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
+                var result = await ApiCheckSerialService.GetFromApiAsync($@"{SettingsManager.APIUrlCheckSerial}{serial.Trim()}");
+                HideLoadOverlay?.Invoke(this, EventArgs.Empty);
+
+                Console.WriteLine($"Status Code: {result.statusCode}");
+                Console.WriteLine($"Content: {result.content}");
+
+                string Res = "NO_RESPONSE";
+                if (result.content != null)
+                {                    
+                    switch (Convert.ToString(result.content))
+                    {
+                        case "0":
+                            Res = $"NO_OK{Environment.NewLine}";
+                            break;
+
+                        case "1":
+                            Res = $"OK{Environment.NewLine}";
+                            break;
+
+                        default:
+                            Res = $"NO_RESPONSE{Environment.NewLine}";
+                            break;
+                    }
+                    _serialManager.Send(Res);
+                    Dispatcher.Invoke(() => AddLog($"Serie Validada {serial} / {Res} / {result.statusCode}", "OK"));
+
+                }
+                else
+                {
+                    Dispatcher.Invoke(() => AddLog($@"Error {serial} / {Res} / {result.statusCode}", "Error"));
+                }
+
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() => AddLog($"Serie Validada", $"{serial} / {ex.Message}"));
-            }
-            if (APIresponse != null)
-            {
-                string Res = "NO_RESPONSE";
-                switch (Convert.ToString(APIresponse))
-                {
-                    case "0":
-                        Res = $"NO_OK{Environment.NewLine}";
-                        break;
-
-                    case "1":
-                        Res = $"OK{Environment.NewLine}";
-                        break;
-
-                    default:
-                        Res = $"NO_RESPONSE{Environment.NewLine}";
-                        break;
-                }
-                _serialManager.Send(Res);
-                Dispatcher.Invoke(() => AddLog($"Serie Validada", $"{serial} / {Res}"));
-
-            }
-            else {
-                Dispatcher.Invoke(() => AddLog($@"Error ", $"{serial} Error: "));
+                Dispatcher.Invoke(() => AddLog($@"Serie Validada {serial} / {ex.Message}", "Error"));
             }
         }
         public void AddLog(string mensaje, string tipo, bool persistente = false)

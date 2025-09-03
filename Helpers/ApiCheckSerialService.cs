@@ -2,37 +2,32 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using wpfGMTraceability.Models;
 
 namespace wpfGMTraceability.Helpers
 {
     public class ApiCheckSerialService
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
-        public static async Task<T> GetFromApiAsync<T>(string url)
+        private static readonly HttpClient client = new HttpClient();
+        public static async Task<(string content, int statusCode)> GetFromApiAsync(string url)
         {
+            int statusCode = -1;
             try
             {
-                var response = await _httpClient.GetAsync(url);
-                response.EnsureSuccessStatusCode();
+                HttpResponseMessage response = await client.GetAsync(url);
+                string content = await response.Content.ReadAsStringAsync();
+                statusCode = (int)response.StatusCode;
 
-                //****Validar conexion y estado de la respuesta
-                //response.StatusCode.ToString();
-
-                var json = await response.Content.ReadAsStringAsync();
-                var result = System.Text.Json.JsonSerializer.Deserialize<T>(json, new System.Text.Json.JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                return result;
+                return (content, statusCode);
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
-                Debug.WriteLine($"Error al consumir API: {ex.Message}");
-                return default;
+                // Puedes loggear el error aquí si tienes un panel de errores
+                return (null, statusCode);
             }
         }
     }

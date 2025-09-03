@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using wpfGMTraceability.Helpers;
 
 namespace wpfGMTraceability
 {
@@ -9,15 +10,9 @@ namespace wpfGMTraceability
     /// </summary>
     public partial class App : Application
     {
-        public static string AppFolderPath = @"C:\GMTraceability\";
-        public static string ConfigSettingsFilePath = $@"{AppFolderPath}DATA\Settings.json";
-        public static string ConfigPortsFilePath = $@"{AppFolderPath}DATA\Ports.json";
-        public static string SerialPortStatusMessage = "...";
-        public static string APIUrlCheckSerial = "";
-        public static string TraceType = "";
         protected override void OnStartup(StartupEventArgs e)
         {
-            string sPath = $@"{App.AppFolderPath}DATA\";
+            string sPath = $@"{SettingsManager.AppFolderPath}DATA\";
             if (!Directory.Exists(sPath)) { Directory.CreateDirectory(sPath); }
 
             base.OnStartup(e);

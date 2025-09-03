@@ -19,7 +19,7 @@ namespace wpfGMTraceability.Managers
         {
             SerialPortConfig _config;
 
-            var json = File.ReadAllText(App.ConfigPortsFilePath);
+            var json = File.ReadAllText(SettingsManager.ConfigPortsFilePath);
             _config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
 
             Reader = new SerialPortManager(_config.ReadPort, _config.BaudRate, _config.Parity, _config.DataBits, _config.StopBits);
