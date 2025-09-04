@@ -21,7 +21,6 @@ namespace wpfGMTraceability.Helpers
                 HttpResponseMessage response = await client.GetAsync(url);
                 string content = await response.Content.ReadAsStringAsync();
                 statusCode = (int)response.StatusCode;
-
                 return (content, statusCode);
             }
             catch (HttpRequestException ex)

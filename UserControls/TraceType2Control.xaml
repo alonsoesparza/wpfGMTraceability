@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:wpfGMTraceability.UserControls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local2="clr-namespace:wpfGMTraceability.Helpers"
              mc:Ignorable="d" d:DesignHeight="720" d:DesignWidth="1280" Loaded="TraceType2_Control_Loaded" Unloaded="TraceType2_Control_Unloaded">
     <Grid Background="Gainsboro">
         <Grid.ColumnDefinitions>
@@ -21,7 +22,9 @@
             <RowDefinition Height="25" />
             <RowDefinition Height="80" />
             <RowDefinition Height="80" />
-            <RowDefinition Height="75" />
+            <RowDefinition Height="80" />
+            <RowDefinition Height="80" />
+            <RowDefinition Height="80" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -47,20 +50,46 @@ HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click
             </StackPanel>
         </Button>
 
-
-        <ListBox ItemsSource="{Binding MiListaDeDatos}" Grid.Row="3" Grid.Column="0">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <materialDesign:Card Margin="8" Padding="12">
-                        <StackPanel>
-                            <TextBlock Text="{Binding Nombre}" FontWeight="Bold" />
-                            <TextBlock Text="{Binding Estado}" Foreground="Green" />
-                            <PackIcon Kind="{Binding Icono}" Width="24" Height="24" />
-                        </StackPanel>
-                    </materialDesign:Card>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <materialDesign:Card Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4" Padding="4" Margin="10" UniformCornerRadius="6">
+            <DataGrid x:Name="dgParts" AutoGenerateColumns="False" ItemsSource="{Binding}" IsReadOnly="True" FontSize="14" FontFamily="Segoe UI" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                        RowHeaderWidth="0" HeadersVisibility="Column" GridLinesVisibility="All" materialDesign:DataGridAssist.CellPadding="8" materialDesign:DataGridAssist.ColumnHeaderPadding="12"
+                        RowDetailsVisibilityMode="VisibleWhenSelected" SelectionMode="Single" Background="Transparent" MouseLeftButtonUp="dgParts_MouseLeftButtonUp">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#FF007ACC" />
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="BorderBrush" Value="DarkGray" />
+                        <Setter Property="BorderThickness" Value="0,0,1,0" />
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                        <Setter Property="Height" Value="32" />
+                        <Setter Property="Padding" Value="8" />
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <Border Background="#F5F5F5" Padding="8" Margin="4">
+                            <ItemsControl ItemsSource="{Binding Boxes}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="4" Background="Aqua">
+                                            <TextBlock Text="{Binding BoxNumber}" FontWeight="Bold" Margin="4"/>
+                                            <TextBlock Text="{Binding BoxQt}" Margin="4"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Parte" Binding="{Binding BomPart}" />
+                    <DataGridTextColumn Header="Cantidad por pieza" Binding="{Binding bom_quantity_per_piece}" />
+                    <DataGridTextColumn Header="Disponible" Binding="{Binding total_available}" />
+                    <DataGridCheckBoxColumn Header="Suficiente" Binding="{Binding Sufficient}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </materialDesign:Card>
 
         <ListBox x:Name="lbLog" Grid.ColumnSpan="2" Grid.Row="7" Grid.Column="0" MaxHeight="300" VerticalAlignment="Bottom" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0">
             <ListBox.ItemTemplate>
@@ -74,7 +103,7 @@ HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Image Grid.Row="7" Grid.Column="4" Margin="0 0 10 0" Source="/Resources/LogoWithName.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        <Image Grid.Row="9" Grid.Column="4" Margin="0 0 10 0" Source="/Resources/LogoWithName.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
 
     </Grid>
 </UserControl>

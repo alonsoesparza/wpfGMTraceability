@@ -112,7 +112,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\ApiCalls.cs" />
     <Compile Include="Helpers\ApiCheckSerialService.cs" />
+    <Compile Include="Helpers\BoolToBrushConverter.cs" />
     <Compile Include="Helpers\IMainWindowHost.cs" />
     <Compile Include="Helpers\IOverlayAware.cs" />
     <Compile Include="Helpers\SerialPortConfig.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="Managers\DualSerialManager.cs" />
     <Compile Include="Models\ScanLogItem.cs" />
     <Compile Include="Models\StationConnector.cs" />
+    <Compile Include="Models\StationConnectorPayload.cs" />
     <Compile Include="UserControls\TraceType1Control.xaml.cs">
       <DependentUpon>TraceType1Control.xaml</DependentUpon>
     </Compile>

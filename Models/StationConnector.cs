@@ -14,8 +14,8 @@ namespace wpfGMTraceability.Models
     public class Part
     {
         public string BomPart { get; set; }
-        public int BomQuantityPerPiece { get; set; }
-        public int TotalAvailable { get; set; }
+        public int bom_quantity_per_piece { get; set; }
+        public int total_available { get; set; }
         public bool Sufficient { get; set; }
         public List<Box> Boxes { get; set; }
     }

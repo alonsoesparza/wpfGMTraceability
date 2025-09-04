@@ -76,10 +76,6 @@ namespace wpfGMTraceability.UserControls
                 ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
                 var result = await ApiCheckSerialService.GetFromApiAsync($@"{SettingsManager.APIUrlCheckSerial}{serial.Trim()}");
                 HideLoadOverlay?.Invoke(this, EventArgs.Empty);
-
-                Console.WriteLine($"Status Code: {result.statusCode}");
-                Console.WriteLine($"Content: {result.content}");
-
                 string Res = "NO_RESPONSE";
                 if (result.content != null)
                 {                    
@@ -99,13 +95,11 @@ namespace wpfGMTraceability.UserControls
                     }
                     _serialManager.Send(Res);
                     Dispatcher.Invoke(() => AddLog($"Serie Validada {serial} / {Res} / {result.statusCode}", "OK"));
-
                 }
                 else
                 {
                     Dispatcher.Invoke(() => AddLog($@"Error {serial} / {Res} / {result.statusCode}", "Error"));
                 }
-
             }
             catch (Exception ex)
             {
