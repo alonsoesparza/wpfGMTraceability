@@ -13,120 +13,69 @@ using wpfGMTraceability.Helpers;
 
 namespace wpfGMTraceability.Managers
 {
-    public class SerialPortManager
+    public class SerialPortManager : IDisposable
     {
-        private SerialPort _port;
-        private SerialPortConfig _config;
+        private SerialPort _serialPort;
+        private readonly StringBuilder _buffer = new StringBuilder();
+        private readonly SynchronizationContext _syncContext;
+        private bool _isDisposed;
         public event EventHandler<string> DataReceived;
-
-        private Timer _reconnectTimer;
-        private readonly TimeSpan _reconnectInterval = TimeSpan.FromSeconds(5);
-
-        public SerialPortManager(string portName, int baudRate, System.IO.Ports.Parity parity, int dataBits, System.IO.Ports.StopBits stopBits)
+        public bool IsOpen => _serialPort?.IsOpen ?? false;
+        public SerialPortManager(string portName, int baudRate, Parity parity, int dataBits, StopBits stopBits)
         {
-            if (string.IsNullOrWhiteSpace(portName))
-            {
-                SettingsManager.SerialPortStatusMessage = $"Error al abrir el puerto";
-                return;
-            }
-            _port = new SerialPort
+            _syncContext = SynchronizationContext.Current ?? new SynchronizationContext();
+            _serialPort = new SerialPort(portName, baudRate, parity, dataBits, stopBits)
             {
                 PortName = portName,
                 BaudRate = baudRate,
                 Parity = parity,
                 DataBits = dataBits,
-                StopBits = stopBits
+                StopBits = stopBits,
+                Encoding = Encoding.UTF8,
+                ReadTimeout = 500,
+                WriteTimeout = 500
             };
-            _port.DataReceived += (s, e) =>
-            {
-                string data = _port.ReadExisting();
-                DataReceived?.Invoke(this, data);
-            };
-            _port.ErrorReceived += OnErrorReceived;
+            _serialPort.DataReceived += OnDataReceived;
         }
         public void Open()
         {
-            try
-            {
-                if (_port != null) { _port.Open(); } else {
-                    SettingsManager.SerialPortStatusMessage = $"Error al abrir el puerto: Configuración inválida.";
-                    return;
-                }
-
-                SettingsManager.SerialPortStatusMessage = $"Puerto {_port.PortName} abierto correctamente.";
-            }
-            catch (System.IO.IOException ex)
-            {
-                SettingsManager.SerialPortStatusMessage = $"Error al abrir el puerto: {ex.Message}";
-                //En caso que se requiera iniciar una reconexion automática
-                //StartReconnectTimer();
-            }
+            if (_serialPort != null && !_serialPort.IsOpen)
+                _serialPort.Open();
         }
         public void Close()
         {
-            _reconnectTimer?.Dispose();
-
-            if (_port != null)
-            {
-                _port.DataReceived -= OnDataReceived;
-                _port.ErrorReceived -= OnErrorReceived;
-
-                if (_port.IsOpen) { _port.Close(); }
-                    
-            }
-        }
-        public void Write(string data)
-        {
-            if (_port?.IsOpen == true) { _port.WriteLine(data); }
+            if (_serialPort != null && _serialPort.IsOpen)
+                _serialPort.Close();
         }
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
             {
-                string data = _port.ReadExisting();
-                DataReceived?.Invoke(this, data);
+                string data = _serialPort.ReadExisting();
+                _buffer.Append(data);
+
+                // Notificar en el hilo de UI
+                _syncContext.Post(_ => DataReceived?.Invoke(this, data), null);
             }
             catch (Exception ex)
             {
-                SettingsManager.SerialPortStatusMessage = $"Error: {ex.Message}";
+                // Agregar a Log de errores
             }
         }
-        private void OnErrorReceived(object sender, SerialErrorReceivedEventArgs e)
+        public void Dispose()
         {
-            Debug.WriteLine($"Error de puerto: {e.EventType}");
-            //RestartConnection();
-        }
-        private void StartReconnectTimer()
-        {
-            _reconnectTimer?.Dispose();
-            _reconnectTimer = new Timer(_ =>
-            {
-                Debug.WriteLine("Intentando reconectar...");
-                RestartConnection();
-            }, null, _reconnectInterval, _reconnectInterval);
-        }
-        private void RestartConnection()
-        {
+            if (_isDisposed) return;
             try
             {
-                if (_port?.IsOpen == true)
+                Close();
+                if (_serialPort != null)
                 {
-                    _port.Close();
-                }
-
-                Open();
-
-                if (_port?.IsOpen == true)
-                {
-                    _reconnectTimer?.Dispose();
-                    SettingsManager.SerialPortStatusMessage = "Reconexion exitosa.";
+                    _serialPort.DataReceived -= OnDataReceived;
+                    _serialPort.Dispose();
                 }
             }
-            catch (Exception ex)
-            {
-                SettingsManager.SerialPortStatusMessage = $"Fallo la reconexión: {ex.Message}";
-                // El timer jala de nuevo
-            }
+            catch { /* Silenciar errores de cierre */ }
+            _isDisposed = true;
         }
     }
 }

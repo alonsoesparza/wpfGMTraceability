@@ -97,7 +97,7 @@ HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click
                     <DockPanel Margin="2" LastChildFill="True">
                         <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Width="20" Height="20" Margin="0,0,6,0" />
                         <Border Padding="6" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
-                            <TextBlock Text="{Binding Formatted}" Foreground="Gray" FontSize="14" />
+                            <TextBlock Text="{Binding Formatted}" Foreground="White" FontSize="12" />
                         </Border>
                     </DockPanel>
                 </DataTemplate>

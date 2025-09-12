@@ -49,7 +49,6 @@ namespace wpfGMTraceability.Views
             var configPorts = new SerialPortConfig
             {
                 ReadPort = readPort,
-                WritePort = writePort,
                 BaudRate = 9600,
                 Parity = Parity.None,
                 DataBits = 8,
@@ -116,7 +115,7 @@ namespace wpfGMTraceability.Views
                 var jsonPorts = System.IO.File.ReadAllText(SettingsManager.ConfigPortsFilePath);
                 _configPorts = JsonConvert.DeserializeObject<SerialPortConfig>(jsonPorts);
                 cbInPort.SelectedItem = _configPorts.ReadPort;
-                cbOutPort.SelectedItem = _configPorts.WritePort;                
+               // cbOutPort.SelectedItem = _configPorts.WritePort;                
             }
             catch (Exception)
             {

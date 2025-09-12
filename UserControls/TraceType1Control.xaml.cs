@@ -18,18 +18,17 @@ namespace wpfGMTraceability.UserControls
     /// </summary>
     public partial class TraceType1Control : UserControl, IOverlayAware
     {
-        private readonly DualSerialManager _serialManager;
+
         ObservableCollection<ScanLogItem> logItems = new ObservableCollection<ScanLogItem>();
         DispatcherTimer cleanTimer;
 
         public event EventHandler ShowLoadOverlay;
         public event EventHandler HideLoadOverlay;
 
-        public TraceType1Control(DualSerialManager _dualManager)
+        public TraceType1Control()
         {
             InitializeComponent();
-            _serialManager = _dualManager;
-            _serialManager.DataReceived += SerialManager_DataReceived;
+           
         }
         private void TraceType1_Control_Loaded(object sender, RoutedEventArgs e)
         {
@@ -44,19 +43,20 @@ namespace wpfGMTraceability.UserControls
         }
         private void TraceType1_Control_Unloaded(object sender, RoutedEventArgs e)
         {
-            _serialManager.DataReceived -= SerialManager_DataReceived;
+   
         }
-        private void SerialManager_DataReceived(object sender, string data)
-        {
+        private void OnSerialData(object sender, string data)
+        {            
             Dispatcher.Invoke(() =>
             {
                 string sLastData = "";
                 sLastData = txtScanCode.Text;
-                txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:","")}";
+                txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}";
                 txtScanCode.Text = $"Escaneado: {data}";
                 CheckSerialNumber(data);
             });
         }
+
         private void BtnPlayVideo_Click(object sender, RoutedEventArgs e)
         {
             var ventana = Window.GetWindow(this) as MainWindow;
@@ -93,7 +93,7 @@ namespace wpfGMTraceability.UserControls
                             Res = $"NO_RESPONSE{Environment.NewLine}";
                             break;
                     }
-                    _serialManager.Send(Res);
+                   
                     Dispatcher.Invoke(() => AddLog($"Serie Validada {serial} / {Res} / {result.statusCode}", "OK"));
                 }
                 else

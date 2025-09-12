@@ -114,14 +114,15 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\ApiCalls.cs" />
     <Compile Include="Helpers\ApiCheckSerialService.cs" />
-    <Compile Include="Helpers\BoolToBrushConverter.cs" />
+    <Compile Include="Helpers\HttpStatusHelper.cs" />
     <Compile Include="Helpers\IMainWindowHost.cs" />
     <Compile Include="Helpers\IOverlayAware.cs" />
     <Compile Include="Helpers\SerialPortConfig.cs" />
     <Compile Include="Helpers\SettingsManager.cs" />
     <Compile Include="Helpers\TypeToColorConverter.cs" />
     <Compile Include="Helpers\TypeToIconConverter.cs" />
-    <Compile Include="Managers\DualSerialManager.cs" />
+    <Compile Include="Managers\SerialPortSession.cs" />
+    <Compile Include="Models\MissingPartToBoxRequest.cs" />
     <Compile Include="Models\ScanLogItem.cs" />
     <Compile Include="Models\StationConnector.cs" />
     <Compile Include="Models\StationConnectorPayload.cs" />
@@ -139,6 +140,9 @@
     </Compile>
     <Compile Include="Views\OptionsMenuWindow.xaml.cs">
       <DependentUpon>OptionsMenuWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RequestBoxWindow.xaml.cs">
+      <DependentUpon>RequestBoxWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VideoWindow.xaml.cs">
       <DependentUpon>VideoWindow.xaml</DependentUpon>
@@ -176,6 +180,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\RequestBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\VideoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -209,7 +217,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Misc.txt" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\LogoWithName.png" />
   </ItemGroup>

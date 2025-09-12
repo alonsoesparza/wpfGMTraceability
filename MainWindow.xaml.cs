@@ -14,7 +14,6 @@ namespace wpfGMTraceability
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DualSerialManager _dual;
         public MainWindow()
         {
             InitializeComponent();
@@ -45,23 +44,21 @@ namespace wpfGMTraceability
             SettingsManager.APIConsumeSerialUrl = _config.APISerialConsumeUrl;
 
             //*******Load Ports Config********
-            _dual = new DualSerialManager();
             RenderPages.Children.Clear();
 
             try
             {
                 UserControl myUsrCtrl = null;
-                _dual.Start();
 
                 switch (SettingsManager.TraceType)
                 {
                     case "Tipo 1":
                         //Title = "GM Traceability - Tipo 1";
-                        myUsrCtrl = new TraceType1Control(_dual);
+                        myUsrCtrl = new TraceType1Control();
                         break;
                     case "Tipo 2":
                         //Title = "GM Traceability - Tipo 1";
-                        myUsrCtrl = new TraceType2Control(_dual);
+                        myUsrCtrl = new TraceType2Control();
                         break;
 
                     default:
@@ -108,7 +105,7 @@ namespace wpfGMTraceability
         #endregion
         private void Main_Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _dual.Stop();
+            
         }
     }
 }

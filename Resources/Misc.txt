@@ -1,0 +1,17 @@
+﻿ #region Inicialización y carga
+  #endregion
+
+ #region Eventos del sistema
+  #endregion
+
+ #region Eventos de comunicación
+  #endregion
+
+ #region Funciones de negocio / lógica principal
+ #endregion
+
+ #region Liberación de recursos
+ #endregion
+
+ #region Logging y diagnóstico
+ #endregion

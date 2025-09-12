@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,19 @@ namespace wpfGMTraceability.Helpers
     {
         public static async Task<StationData> GetStationDataAsync()
         {
-            using (var client = new HttpClient()) {
-                var json = await client.GetStringAsync(SettingsManager.APILoadBOMUrl); // o la URL que uses
-                var data = JsonConvert.DeserializeObject<StationData>(json);
-                return data;
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var json = await client.GetStringAsync(SettingsManager.APILoadBOMUrl); // o la URL que uses
+                    var data = JsonConvert.DeserializeObject<StationData>(json);
+                    return data;
+                }
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine(Ex.Message.ToString());
+                throw;
             }
         }
         public static async Task<(string content, int statusCode)> GetFromApiAsync(string url)
@@ -46,16 +56,41 @@ namespace wpfGMTraceability.Helpers
                 var content = new StringContent(Json, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage response = await client.PostAsync(SettingsManager.APIConsumeSerialUrl, content);
+                string responseContent = await response.Content.ReadAsStringAsync();
 
+                statusCode = (int)response.StatusCode;
                 if (response.IsSuccessStatusCode)
                 {
-                    string respuesta = await response.Content.ReadAsStringAsync();
-                    statusCode = (int)response.StatusCode;
+                    string respuesta = await response.Content.ReadAsStringAsync();                    
                     return (respuesta, statusCode);
                 }
                 else
                 {
-                    return (null, statusCode);
+                    var json = JObject.Parse(responseContent);
+                    return (json["detail"]?.ToString(), statusCode);
+                }
+            }
+        }
+        public static async Task<(string content, int statusCode)> PostAPIRequestBoxAsync(string Json)
+        {
+            int statusCode = -1;
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(Json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(SettingsManager.APIRequestBoxUrl, content);
+
+                string responseContent = await response.Content.ReadAsStringAsync();
+
+                statusCode = (int)response.StatusCode;
+                if (response.IsSuccessStatusCode)
+                {
+                    string respuesta = await response.Content.ReadAsStringAsync();
+                    return (respuesta, statusCode);
+                }
+                else
+                {
+                    var json = JObject.Parse(responseContent);
+                    return (json["detail"]?.ToString(), statusCode);
                 }
             }
         }

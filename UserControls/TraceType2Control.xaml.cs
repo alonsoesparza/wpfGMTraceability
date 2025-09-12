@@ -1,25 +1,18 @@
-﻿using MaterialDesignThemes.Wpf;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using wpfGMTraceability.Helpers;
 using wpfGMTraceability.Managers;
 using wpfGMTraceability.Models;
-using static MaterialDesignThemes.Wpf.Theme.ToolBar;
+using wpfGMTraceability.Views;
 
 namespace wpfGMTraceability.UserControls
 {
@@ -28,51 +21,45 @@ namespace wpfGMTraceability.UserControls
     /// </summary>
     public partial class TraceType2Control : UserControl, IOverlayAware
     {
+        #region Inicialización y carga
+
         StationData BOMInventoryData;
 
-        private readonly DualSerialManager _serialManager;
+        private SerialPortSession _session;
         ObservableCollection<ScanLogItem> logItems = new ObservableCollection<ScanLogItem>();
-        DispatcherTimer cleanTimer;
 
         public event EventHandler ShowLoadOverlay;
         public event EventHandler HideLoadOverlay;
-        public TraceType2Control(DualSerialManager _dualManager)
+        public TraceType2Control()
         {
             InitializeComponent();
-            _serialManager = _dualManager;
-            _serialManager.DataReceived += SerialManager_DataReceived;
+
+            SerialPortConfig _config;
+
+            var json = System.IO.File.ReadAllText(SettingsManager.ConfigPortsFilePath);
+            _config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
+
+            _session = new SerialPortSession(_config.ReadPort, _config.BaudRate, _config.Parity, _config.DataBits, _config.StopBits);
+            _session.AssignOwner(this, OnSerialData);
+            _session.Open();
+
         }
         private void TraceType2_Control_Loaded(object sender, RoutedEventArgs e)
         {
             var window = Window.GetWindow(this) as IMainWindowHost;
             window?.SetWindowTitle("Nuevo título desde el UserControl");
-            /**Se necesita esperar el resultado**/
-            //LoadBOMDataAsync().GetAwaiter().GetResult();
+            lbLog.ItemsSource = logItems;
             _ = LoadBOMDataAsync();
         }
-        private void TraceType2_Control_Unloaded(object sender, RoutedEventArgs e)
-        {
-            
-        }
+        #endregion      
+        
+        #region Eventos del sistema
         private void BtnPlayVideo_Click(object sender, RoutedEventArgs e)
         {
 
         }
-        private void SerialManager_DataReceived(object sender, string data)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                string sLastData = "";
-                sLastData = txtScanCode.Text;
-                txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}";
-                txtScanCode.Text = $"Escaneado: {data}";
-                DoConsume(data);
-            });
-        }
         private void dgParts_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-
-
             var dep = (DependencyObject)e.OriginalSource;
 
             if (dgParts.SelectedItem == null)
@@ -96,7 +83,24 @@ namespace wpfGMTraceability.UserControls
                 }
             }
         }
-        #region Local Methods
+        #endregion
+        
+        #region Eventos de comunicación
+        private void OnSerialData(object sender, string data)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                string sLastData = "";
+                sLastData = txtScanCode.Text;
+                txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}";
+                txtScanCode.Text = $"Escaneado: {data}";
+                ProcessSerialNumber(data);
+            });
+
+        }
+        #endregion
+
+        #region Funciones de negocio / lógica principal
         private async Task LoadBOMDataAsync()
         {
             BOMInventoryData = await ApiCalls.GetStationDataAsync();
@@ -109,51 +113,117 @@ namespace wpfGMTraceability.UserControls
                 MessageBox.Show(ex.Message);
             }
         }
-        private async void DoConsume(string serial) {
-            var LastSerialByPart = BOMInventoryData.Parts
-                .Where(p => p.Boxes != null && p.Boxes.Count > 0)
+        private void ProcessSerialNumber(string serial)
+        {
+            var InsufficientParts = CheckForSufficientStock();
+            if (InsufficientParts.Count > 0)
+            {
+                try
+                {
+                    _session.ReleaseOwner(this);
+                    var modal = new RequestBoxWindow(_session, InsufficientParts, BOMInventoryData, serial);
+                    modal.ShowDialog();
+                    _session.AssignOwner(this, OnSerialData);
+                }
+                catch (Exception ex)
+                {
+                    Console.Write(ex.Message);
+                }
+                return;
+            }
+            else
+            {
+                DoConsume(serial);
+            }
+        }
+        private List<object> CheckForSufficientStock()
+        {
+            var SufficientParts = BOMInventoryData.Parts
+                .Where(p => !p.Sufficient)
                 .Select(p => new
                 {
-                    BomPart = p.BomPart,
-                    BomQty = p.bom_quantity_per_piece,
-                    OldBox = p.Boxes.Last()
-                })
-                .ToList();
+                    p.BomPart,
+                    p.bom_quantity_per_piece,
+                    p.total_available
+                });
 
-            var jsonList = new List<object>();
-            foreach (var item in LastSerialByPart)
+            return SufficientParts.Cast<object>().ToList();
+        }
+        private async void DoConsume(string serial)
+        {
+            //** Cajas Ordenadas para recorrerlas en orden
+            var orderedBoxesByPart = BOMInventoryData.Parts
+                                    .Where(p => p.Boxes != null && p.Boxes.Count > 0)
+                                    .Select(p => new
+                                    {
+                                        BomPart = p.BomPart,
+                                        BomQty = p.bom_quantity_per_piece,
+                                        Boxes = p.Boxes.OrderBy(b => b.BoxNumber).ToList()
+                                    })
+                                    .ToList();
+
+            //** Crear la lista de consumo
+            var consumptionItems = new List<object>();
+            foreach (var part in orderedBoxesByPart)
             {
-                var jsonEntry = new
+                int remainingQty = part.BomQty;
+
+                foreach (var box in part.Boxes)
                 {
-                    boxnumber = item.OldBox.BoxNumber,
-                    serialtestnumber = serial.Trim(),
-                    qty = item.BomQty
-                };
-                jsonList.Add(jsonEntry);
+                    if (remainingQty <= 0)
+                        break;
+
+                    int qtyToTake = Math.Min(box.BoxQt, remainingQty);
+
+                    consumptionItems.Add(new
+                    {
+                        boxnumber = box.BoxNumber,
+                        serialtestnumber = serial,
+                        qty = qtyToTake
+                    });
+
+                    remainingQty -= qtyToTake;
+                }
             }
 
-            var payload = new StationConnectorPayload
+            var finalJson = new
             {
-                station_name = "TycoStationConnector",
-                items = jsonList
+                station_name = BOMInventoryData.Station,
+                items = consumptionItems
             };
 
-            string jsonFinal = JsonConvert.SerializeObject(payload, Formatting.Indented);
+            string jsonFinal = JsonConvert.SerializeObject(finalJson, Formatting.Indented);
 
             ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
             var result = await ApiCalls.PostAPIConsumeAsync(jsonFinal);
             HideLoadOverlay?.Invoke(this, EventArgs.Empty);
 
-            string Res = "NO_RESPONSE";
+            string ResContent = result.content;
+            int StatusCode = result.statusCode;
 
-            if (result.content != null)
+            string StatusMessage = HttpStatusHelper.GetStatusMessage(StatusCode);
+
+            if (ResContent != null)
             {
-                _serialManager.Send(Res);
-                Dispatcher.Invoke(() => AddLog($"Serie hgdhgdghdValidada {serial} / {Res} / {result.statusCode}", "OK"));
-
+                Dispatcher.Invoke(() => AddLog($"{serial} / {ResContent} / {StatusMessage}", "OK"));
                 _ = LoadBOMDataAsync();
             }
+            else
+            {
+                //**** Mensaje de error, API no responde
+                Dispatcher.Invoke(() => AddLog($"{serial} / {ResContent} / {StatusMessage}", "ERROR"));
+            }
         }
+        #endregion
+
+        #region Liberación de recursos
+        private void TraceType2_Control_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _session.Dispose();
+        }
+        #endregion
+
+        #region Logging y diagnóstico
         public void AddLog(string mensaje, string tipo, bool persistente = false)
         {
             var nuevoLog = new ScanLogItem

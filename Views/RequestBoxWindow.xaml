@@ -1,0 +1,99 @@
+﻿<Window x:Name="RequestBox_Window" x:Class="wpfGMTraceability.Views.RequestBoxWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpfGMTraceability.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="RequestBoxWindow" Height="550" Width="700" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="RequestBox_Window_Loaded">
+    <Grid Background="Gainsboro">
+        <materialDesign:Card Margin="0" UniformCornerRadius="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="68"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="BtnClose" Grid.Column="4" Grid.Row="0" Content="✕" FontWeight="Bold" FontSize="24" Width="36" Height="36" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Cerrar" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" Click="BtnClose_Click"/>
+
+                <TextBlock Text="Escaneo de cajas faltantes" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" FontSize="28" HorizontalAlignment="left" Margin="10 10 0 20" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+
+                <!-- ** Missing BOM PartNumbers ** -->
+                <materialDesign:Card Grid.Row="1" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2" Padding="2" Margin="10" UniformCornerRadius="6">
+                    <ListBox x:Name="lbMissingParts" ItemsSource="{Binding}" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="36" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" SelectionMode="Single">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}" BorderThickness="1" CornerRadius="12" Padding="0" Margin="0 0 0 0" Background="{DynamicResource MaterialDesignPaper}">
+                                    <TextBlock Text="{Binding BomPart}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Padding="10" VerticalAlignment="Center" Background="Transparent"/>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </materialDesign:Card>
+
+                <!--** Scan Textbox **-->
+                <materialDesign:Card materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" BorderThickness="2" BorderBrush="Navy" Width="auto" Height="auto" Background="Blue" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" Margin="0 10 10 0">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Width="32" Height="32" Kind="BarcodeScanner" Margin="5 0 0 0" Foreground="Gray" VerticalAlignment="Center" />
+                        <TextBlock x:Name="txtScanCode" FontWeight="SemiBold" VerticalAlignment="Center" FontSize="18" Foreground="White" Text="" Margin="10 0 0 0" />
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <Grid Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2" Grid.Row="2" Margin="0 5 0 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <materialDesign:Card Background="{DynamicResource MaterialDesignDarkSeparatorBackground}" Grid.Column="0" Grid.RowSpan="2" UniformCornerRadius="6" Margin="0 5 10 0">
+                        <StackPanel>
+                            <!-- Series agregadas -->
+                            <TextBlock Text="Series agregadas" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,0,8" />
+                            <ListBox x:Name="lbAddedSerials" ItemsSource="{Binding}" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="36" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" SelectionMode="Single">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}" BorderThickness="2" CornerRadius="12" Padding="8" Margin="4" Background="{DynamicResource MaterialDesignPaper}">
+                                            <TextBlock Text="{Binding Serials}" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Padding="20" VerticalAlignment="Center" Background="Transparent"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </materialDesign:Card>
+ 
+                </Grid>
+
+                <!--** Log **-->
+                <Grid Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="4" Margin="0 5 0 5">
+                    <materialDesign:Card Margin="0" Background="{DynamicResource MaterialDesignPaper}">
+                        <ListBox x:Name="lbLog" BorderThickness="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="2" LastChildFill="True">
+                                        <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Width="20" Height="20" Margin="0,0,0,0" />
+                                        <Border Padding="6" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
+                                            <TextBlock Text="{Binding Formatted}" Foreground="White" FontSize="12" />
+                                        </Border>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </materialDesign:Card>
+                </Grid>
+            </Grid>
+        </materialDesign:Card>
+    </Grid>
+</Window>
