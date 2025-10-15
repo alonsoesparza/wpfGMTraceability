@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:wpfGMTraceability.Views"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="OptionsWindow" Height="450" Width="600" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Config_Window_Loaded">
+        Title="OptionsWindow" Height="520" Width="600" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Config_Window_Loaded">
     <Grid>
         <materialDesign:Card Margin="0" UniformCornerRadius="10">
             <Grid>
@@ -62,6 +62,13 @@
                                 <StackPanel Margin="10">
                                     <TextBlock Text="API Serial Consume Url:" Margin="0,0,0,5"/>
                                     <TextBox x:Name="txtAPIConsumeUrl" Margin="0,0,0,20"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="URL video:" Margin="0,0,0,5"/>
+                                    <TextBox x:Name="txtVideo" Margin="0,0,0,20"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

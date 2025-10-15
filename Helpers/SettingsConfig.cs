@@ -13,5 +13,6 @@ namespace wpfGMTraceability.Helpers
         public string APIBoxRequestUrl { get; set; }
         public string APISerialConsumeUrl { get; set; }
         public string TraceType { get; set; }
+        public string VideoURL { get; set; }
     }
 }

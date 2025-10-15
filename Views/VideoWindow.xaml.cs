@@ -1,6 +1,8 @@
 ﻿using Microsoft.Web.WebView2.Core;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using wpfGMTraceability.Helpers;
 
 namespace wpfGMTraceability.Views
 {
@@ -16,12 +18,15 @@ namespace wpfGMTraceability.Views
         private async void Video_Window_Loaded(object sender, RoutedEventArgs e)
         {
             await webView.EnsureCoreWebView2Async();
-
             webView.CoreWebView2.Settings.IsWebMessageEnabled = true;
-
             webView.AllowExternalDrop = true;
 
-            webView.CoreWebView2.Navigate(@"http://10.13.0.41:8080/slid/site");
+            SettingsConfig _config;
+            var json = System.IO.File.ReadAllText(SettingsManager.ConfigSettingsFilePath);
+            _config = JsonConvert.DeserializeObject<SettingsConfig>(json);
+            string urlVideo = _config.VideoURL.ToString();
+
+            webView.CoreWebView2.Navigate(urlVideo);
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)

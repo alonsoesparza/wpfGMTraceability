@@ -114,7 +114,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\ApiCalls.cs" />
-    <Compile Include="Helpers\ApiCheckSerialService.cs" />
     <Compile Include="Helpers\HttpStatusHelper.cs" />
     <Compile Include="Helpers\IMainWindowHost.cs" />
     <Compile Include="Helpers\IOverlayAware.cs" />
