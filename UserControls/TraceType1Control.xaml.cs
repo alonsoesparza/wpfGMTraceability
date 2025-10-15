@@ -26,7 +26,6 @@ namespace wpfGMTraceability.UserControls
         DispatcherTimer cleanTimer;
         public event EventHandler ShowLoadOverlay;
         public event EventHandler HideLoadOverlay;
-
         public TraceType1Control()
         {
             InitializeComponent();

@@ -10,7 +10,7 @@ namespace wpfGMTraceability.Helpers
     public class SerialWriter
     {
         private SerialPort _serialPort;
-        public SerialWriter(string portName = "COM10", int baudRate = 9600)
+        public SerialWriter(string portName = "COM9", int baudRate = 9600)
         {
             _serialPort = new SerialPort(portName, baudRate)
             {
