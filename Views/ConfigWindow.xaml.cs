@@ -48,7 +48,16 @@ namespace wpfGMTraceability.Views
 
             var configPorts = new SerialPortConfig
             {
-                ReadPort = readPort,
+                Port = readPort,
+                BaudRate = 9600,
+                Parity = Parity.None,
+                DataBits = 8,
+                StopBits = StopBits.One
+            };
+
+            var configWritePorts = new SerialPortConfig
+            {
+                Port = writePort,
                 BaudRate = 9600,
                 Parity = Parity.None,
                 DataBits = 8,
@@ -69,6 +78,9 @@ namespace wpfGMTraceability.Views
 
             var jsonPorts = JsonConvert.SerializeObject(configPorts, Formatting.Indented);
             System.IO.File.WriteAllText(SettingsManager.ConfigPortsFilePath, jsonPorts);
+
+            var jsonWritePort = JsonConvert.SerializeObject(configWritePorts, Formatting.Indented);
+            System.IO.File.WriteAllText(SettingsManager.ConfigWritePortsFilePath, jsonWritePort);
 
             try
             {
@@ -114,8 +126,13 @@ namespace wpfGMTraceability.Views
                 SerialPortConfig _configPorts;
                 var jsonPorts = System.IO.File.ReadAllText(SettingsManager.ConfigPortsFilePath);
                 _configPorts = JsonConvert.DeserializeObject<SerialPortConfig>(jsonPorts);
-                cbInPort.SelectedItem = _configPorts.ReadPort;
-               // cbOutPort.SelectedItem = _configPorts.WritePort;                
+                cbInPort.SelectedItem = _configPorts.Port;
+
+                SerialPortConfig _configWritePort;
+                var jsonWritePort = System.IO.File.ReadAllText(SettingsManager.ConfigWritePortsFilePath);
+                _configWritePort = JsonConvert.DeserializeObject<SerialPortConfig>(jsonWritePort);
+                cbOutPort.SelectedItem = _configWritePort.Port;
+              
             }
             catch (Exception)
             {

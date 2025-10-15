@@ -69,7 +69,14 @@ namespace wpfGMTraceability.Views
                 string sLastData = "";
                 sLastData = txtScanCode.Text;
                 txtScanCode.Text = $"{data}";
-                ProcessRMSerialNumber(data);
+                if (data == "CLOSEWINDOW") {
+                    _session.ReleaseOwner(this);
+                    this.Close();
+                }
+                else
+                {
+                    ProcessRMSerialNumber(data);
+                }
             });
         }
         #endregion

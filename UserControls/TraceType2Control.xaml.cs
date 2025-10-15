@@ -39,7 +39,7 @@ namespace wpfGMTraceability.UserControls
             var json = System.IO.File.ReadAllText(SettingsManager.ConfigPortsFilePath);
             _config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
 
-            _session = new SerialPortSession(_config.ReadPort, _config.BaudRate, _config.Parity, _config.DataBits, _config.StopBits);
+            _session = new SerialPortSession(_config.Port, _config.BaudRate, _config.Parity, _config.DataBits, _config.StopBits);
             _session.AssignOwner(this, OnSerialData);
             _session.Open();
 
@@ -124,6 +124,7 @@ namespace wpfGMTraceability.UserControls
                     var modal = new RequestBoxWindow(_session, InsufficientParts, BOMInventoryData, serial);
                     modal.ShowDialog();
                     _session.AssignOwner(this, OnSerialData);
+                    _ = LoadBOMDataAsync();
                 }
                 catch (Exception ex)
                 {

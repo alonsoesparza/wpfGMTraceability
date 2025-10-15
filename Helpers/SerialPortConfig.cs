@@ -8,7 +8,7 @@ namespace wpfGMTraceability.Helpers
 {
     public class SerialPortConfig
     {
-        public string ReadPort { get; set; }
+        public string Port { get; set; }
         public int BaudRate { get; set; } = 9600;
         public System.IO.Ports.Parity Parity { get; set; } = System.IO.Ports.Parity.None;
         public int DataBits { get; set; } = 8;

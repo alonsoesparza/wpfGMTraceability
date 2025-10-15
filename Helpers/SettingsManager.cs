@@ -11,6 +11,7 @@ namespace wpfGMTraceability.Helpers
         public static string AppFolderPath = @"C:\GMTraceability\";
         public static string ConfigSettingsFilePath = $@"{AppFolderPath}DATA\Settings.json";
         public static string ConfigPortsFilePath = $@"{AppFolderPath}DATA\Ports.json";
+        public static string ConfigWritePortsFilePath = $@"{AppFolderPath}DATA\WPorts.json";
         public static string SerialPortStatusMessage = "...";
         public static string APIUrlCheckSerial { get; set; }
         public static string APILoadBOMUrl;
