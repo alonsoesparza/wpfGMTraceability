@@ -51,11 +51,31 @@ namespace wpfGMTraceability.Managers
         {
             try
             {
-                string data = _serialPort.ReadExisting();
-                _buffer.Append(data);
+                //string data = _serialPort.ReadExisting();
+
+                string buffer = "";
+                string linea = "";
+                
+                bool fContinue = true;
+                while (fContinue)
+                {
+                    buffer += _serialPort.ReadExisting(); // agrega lo nuevo
+
+                    // Si detectas un marcador de fin (por ejemplo '\n')
+                    if (buffer.Contains("\n"))
+                    {
+                        linea = buffer.Substring(0, buffer.IndexOf("\n"));
+                        buffer = buffer.Substring(buffer.IndexOf("\n") + 1);
+                        fContinue = false;                        
+                    }
+                }
+
+
+                //_buffer.Append(linea);
 
                 // Notificar en el hilo de UI
-                _syncContext.Post(_ => DataReceived?.Invoke(this, data), null);
+                _syncContext.Post(_ => DataReceived?.Invoke(this, linea), null);
+
             }
             catch (Exception ex)
             {

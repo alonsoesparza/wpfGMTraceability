@@ -20,7 +20,8 @@ namespace wpfGMTraceability.UserControls
     public partial class TraceType1Control : UserControl, IOverlayAware
     {
         #region Inicialización y carga
-        private SerialWriter writer;
+        //private SerialWriter writer;
+        private SerialWriterReader writer;
         private SerialPortSession _session;
         ObservableCollection<ScanLogItem> logItems = new ObservableCollection<ScanLogItem>();
         DispatcherTimer cleanTimer;
@@ -42,7 +43,7 @@ namespace wpfGMTraceability.UserControls
             var Wjson = System.IO.File.ReadAllText(SettingsManager.ConfigWritePortsFilePath);
             _Wconfig = JsonConvert.DeserializeObject<SerialPortConfig>(Wjson);
 
-            writer = new SerialWriter(_Wconfig.Port, _Wconfig.BaudRate);
+            writer = new SerialWriterReader(_Wconfig.Port, _Wconfig.BaudRate);
             writer.OpenPort();
         }
         private void TraceType1_Control_Loaded(object sender, RoutedEventArgs e)
@@ -75,6 +76,7 @@ namespace wpfGMTraceability.UserControls
         #region Eventos de comunicación
         private void OnSerialData(object sender, string data)
         {            
+
             Dispatcher.Invoke(() =>
             {
                 string sLastData = "";
@@ -113,12 +115,15 @@ namespace wpfGMTraceability.UserControls
                     }
                    
                     Dispatcher.Invoke(() => AddLog($"Serie Validada {serial} / {Res}{Environment.NewLine} / {result.statusCode}", "OK"));
-                    writer.WriteData($"{Res}{Environment.NewLine}");
+                    //writer.Write($"{Res}{Environment.NewLine}");
+                    string PortResponse = writer.WriteAndRead($"{Res}{Environment.NewLine}");
+                    //Recibir Datos del arduino
+                    MessageBox.Show( PortResponse );
                 }
                 else
                 {
                     Dispatcher.Invoke(() => AddLog($@"Error {serial} / {Res}{Environment.NewLine} / {result.statusCode}", "Error"));
-                    writer.WriteData($"{Res}{Environment.NewLine}");
+                    writer.Write($"{Res}{Environment.NewLine}");
                 }
             }
             catch (Exception ex)

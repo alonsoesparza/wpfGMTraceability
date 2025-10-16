@@ -4,11 +4,13 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wpfGMTraceability.Models;
 
 namespace wpfGMTraceability.Helpers
 {
     public class SerialWriter
     {
+        private int _timeoutMs;
         private SerialPort _serialPort;
         public SerialWriter(string portName = "COM9", int baudRate = 9600)
         {
@@ -27,6 +29,25 @@ namespace wpfGMTraceability.Helpers
             {
                 _serialPort.Open();
             }
+        }
+        public string ReadData()
+        {
+            StringBuilder response = new StringBuilder();
+            DateTime start = DateTime.Now;
+            while ((DateTime.Now - start).TotalMilliseconds < _timeoutMs)
+            {
+                try
+                {
+                    string line = _serialPort.ReadLine();
+                    response.AppendLine(line);
+                    break; 
+                }
+                catch (TimeoutException)
+                {
+                    // Silencio, seguimos esperando
+                }
+            }
+            return response.ToString().Trim();
         }
         public void WriteData(string data)
         {

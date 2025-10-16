@@ -119,6 +119,7 @@
     <Compile Include="Helpers\IOverlayAware.cs" />
     <Compile Include="Helpers\SerialPortConfig.cs" />
     <Compile Include="Helpers\SerialWriter.cs" />
+    <Compile Include="Helpers\SerialWriterReader.cs" />
     <Compile Include="Helpers\SettingsManager.cs" />
     <Compile Include="Helpers\TypeToColorConverter.cs" />
     <Compile Include="Helpers\TypeToIconConverter.cs" />
