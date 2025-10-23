@@ -94,5 +94,29 @@ namespace wpfGMTraceability.Helpers
                 }
             }
         }
+        public static async Task<(string content, int statusCode)> PostAPIPASSInsert(string Json)
+        {
+            int statusCode = -1;
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(Json, Encoding.UTF8, "application/json");
+
+                //
+                HttpResponseMessage response = await client.PostAsync(@"http://10.13.0.41:8842/insertvcdata/", content);
+                string responseContent = await response.Content.ReadAsStringAsync();
+
+                statusCode = (int)response.StatusCode;
+                if (response.IsSuccessStatusCode)
+                {
+                    string respuesta = await response.Content.ReadAsStringAsync();
+                    return (respuesta, statusCode);
+                }
+                else
+                {
+                    var json = JObject.Parse(responseContent);
+                    return (json["detail"]?.ToString(), statusCode);
+                }
+            }
+        }
     }
 }

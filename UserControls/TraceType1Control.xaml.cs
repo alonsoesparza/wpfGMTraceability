@@ -97,32 +97,63 @@ namespace wpfGMTraceability.UserControls
                 var result = await ApiCalls.GetFromApiAsync($@"{SettingsManager.APIUrlCheckSerial}{serial.Trim()}");
                 HideLoadOverlay?.Invoke(this, EventArgs.Empty);
                 string Res = "NO_RESPONSE";
+                string ResLogType = "";
                 if (result.content != null)
-                {                    
+                {
                     switch (Convert.ToString(result.content)?.Trim().Replace("\"", ""))
                     {
                         case "0":
                             Res = $"NO_OK";
+                            ResLogType = $"Error";
                             break;
 
                         case "1":
                             Res = $"OK";
+                            ResLogType = $"OK";
                             break;
 
                         default:
                             Res = $"NO_RESPONSE";
+                            ResLogType = $"Error";
                             break;
                     }
-                   
-                    Dispatcher.Invoke(() => AddLog($"Serie Validada {serial} / {Res}{Environment.NewLine} / {result.statusCode}", "OK"));
+
+                    Dispatcher.Invoke(() => AddLog($"Serie {serial} / {Res}{Environment.NewLine} / {result.statusCode}", ResLogType));
                     //writer.Write($"{Res}{Environment.NewLine}");
                     string PortResponse = writer.WriteAndRead($"{Res}{Environment.NewLine}");
                     //Recibir Datos del arduino
-                    MessageBox.Show( PortResponse );
+                    PortResponse = PortResponse.Replace("\r", "");
+                    if (PortResponse == "PASS") { 
+                        var jsonEntry = new
+                        {
+                            SerialNumber = serial,
+                            State = "OK",
+                            Day = $@"{DateTime.Now.Year}-{DateTime.Now.Month.ToString().PadLeft(2,'0')}-{DateTime.Now.Day.ToString().PadLeft(2, '0')}",
+                            Hour = DateTime.Now.ToString("HH:mm"),
+                            C1 = "1",
+                            C2 = "2",
+                            C3 = "3",
+                            C4 = "4",
+                            C5 = "5",
+                            C6 = "6",
+                            C7 = "7",
+                            C8 = "8",
+                            C9 = "9",
+                            C10 = "0"
+                        };
+
+                        string jsonFinal = JsonConvert.SerializeObject(jsonEntry, Formatting.None);
+
+                        var resInsert = await ApiCalls.PostAPIPASSInsert(jsonFinal);
+                    }
+                    else
+                    {
+
+                    }
                 }
                 else
                 {
-                    Dispatcher.Invoke(() => AddLog($@"Error {serial} / {Res}{Environment.NewLine} / {result.statusCode}", "Error"));
+                    Dispatcher.Invoke(() => AddLog($@"Error {serial} / {Res}{Environment.NewLine} / {result.statusCode}", "Error",false));
                     writer.Write($"{Res}{Environment.NewLine}");
                 }
             }

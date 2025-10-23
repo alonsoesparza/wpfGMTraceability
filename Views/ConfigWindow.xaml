@@ -6,79 +6,96 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:wpfGMTraceability.Views"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="OptionsWindow" Height="520" Width="600" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Config_Window_Loaded">
+        Title="OptionsWindow" Height="520" Width="800" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Config_Window_Loaded">
     <Grid>
         <materialDesign:Card Margin="0" UniformCornerRadius="10">
             <Grid>
-                <DockPanel Grid.Row="0" LastChildFill="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" LastChildFill="False">
                     <Button x:Name="BtnClose" Content="✕" FontWeight="Bold" FontSize="24" Width="36" Height="36" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Cerrar" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" Click="BtnClose_Click"/>
                 </DockPanel>
 
-                <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Configurar" FontSize="28" HorizontalAlignment="Center" Margin="0 10 0 20" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
-                    </StackPanel>
-
-                    <Border BorderBrush="Gray" BorderThickness="1" Margin="10 0 10 5" CornerRadius="4">
-                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  Orientation="Horizontal">                        
-                            <StackPanel Margin="0 10 10 0">
-                                <TextBlock Text="Puerto COM Entrada:" Margin="0,0,0,5"/>
-                                <ComboBox x:Name="cbInPort" Margin="0,0,0,20"/>
-                            </StackPanel>
-                            <StackPanel Margin="0 10 10 0">
-                                <TextBlock Text="Puerto COM Salida:" Margin="0,0,0,5"/>
-                                <ComboBox x:Name="cbOutPort" Margin="0,0,0,20"/>
-                            </StackPanel>
-
-                            <StackPanel Margin="0 10 10 0">
-                                <TextBlock Text="Tipo Traceabilidad:" Margin="0,0,0,5"/>
-                                <ComboBox x:Name="cbTraceType" Margin="0,0,0,50">
-                                    <ComboBoxItem Content="Tipo 1" />
-                                    <ComboBoxItem Content="Tipo 2" />
-                                    <ComboBoxItem Content="Tipo 3" />
-                                </ComboBox>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <Border BorderBrush="Gray" BorderThickness="1" Margin="10 0 10 5" CornerRadius="4">
-                        <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <StackPanel Margin="10">
-                                    <TextBlock Text="API SerialCheck Url:" Margin="0,0,0,5"/>
-                                    <TextBox x:Name="txtAPIUrl" Margin="0,0,0,20"/>
-                                </StackPanel>
-                                <StackPanel Margin="10">
-                                    <TextBlock Text="API Load BOM Url:" Margin="0,0,0,5"/>
-                                    <TextBox x:Name="txtAPIBOMUrl" Margin="0,0,0,20"/>
-                                </StackPanel>
-                            </StackPanel>
-                        
-                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <StackPanel Margin="10">
-                                    <TextBlock Text="API Serial Box Request Url:" Margin="0,0,0,5"/>
-                                    <TextBox x:Name="txtAPIRequestBoxUrl" Margin="0,0,0,20"/>
-                                </StackPanel>
-                                <StackPanel Margin="10">
-                                    <TextBlock Text="API Serial Consume Url:" Margin="0,0,0,5"/>
-                                    <TextBox x:Name="txtAPIConsumeUrl" Margin="0,0,0,20"/>
-                                </StackPanel>
-                            </StackPanel>
-
-                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <StackPanel Margin="10">
-                                    <TextBlock Text="URL video:" Margin="0,0,0,5"/>
-                                    <TextBox x:Name="txtVideo" Margin="0,0,0,20"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <StackPanel Margin="80 20 80 0">
-                        <Button x:Name="btnSaveAndReconnect" Content="Guardar y Reconectar" Click="btnSaveAndReconnect_Click"/>
-                    </StackPanel>
-                    
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                    <TextBlock Text="Configurar" FontSize="28" HorizontalAlignment="Center" Margin="0 10 0 20" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
                 </StackPanel>
+
+                <Border BorderBrush="Gray" Grid.Column="0" Grid.Row="1" BorderThickness="1" Margin="10 0 10 5" CornerRadius="4">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  Orientation="Horizontal">
+                        <StackPanel Margin="0 10 10 0">
+                            <TextBlock Text="Puerto COM Entrada:" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="cbInPort" Margin="0,0,0,20"/>
+                        </StackPanel>
+                        <StackPanel Margin="0 10 10 0">
+                            <TextBlock Text="Puerto COM Salida:" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="cbOutPort" Margin="0,0,0,0"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="0 10 10 0">
+                            <TextBlock Text="Tipo Traceabilidad:" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="cbTraceType" Margin="0,0,0,0">
+                                <ComboBoxItem Content="Tipo 1" />
+                                <ComboBoxItem Content="Tipo 2" />
+                                <ComboBoxItem Content="Tipo 3" />
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border BorderBrush="Gray" Grid.Column="0" Grid.Row="2" BorderThickness="1" Margin="10 0 10 5" CornerRadius="4">
+                    <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="API SerialCheck Url:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtAPIUrl" Margin="0,0,0,20"/>
+                            </StackPanel>
+                            <StackPanel Margin="10">
+                                <TextBlock Text="API Load BOM Url:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtAPIBOMUrl" Margin="0,0,0,20"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="API Serial Box Request Url:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtAPIRequestBoxUrl" Margin="0,0,0,20"/>
+                            </StackPanel>
+                            <StackPanel Margin="10">
+                                <TextBlock Text="API Serial Consume Url:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtAPIConsumeUrl" Margin="0,0,0,20"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="URL video:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtVideo" Margin="0,0,0,20"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Button x:Name="btnSaveAndReconnect" Grid.Column="0" Grid.Row="3" Margin="10 0 10 0" Content="Guardar y Reconectar" Click="btnSaveAndReconnect_Click"/>
+
+                <Border BorderBrush="Gray" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" BorderThickness="1" Margin="0 0 10 5" CornerRadius="4">
+                    <ListBox x:Name="lbCOMs" Margin="10" ItemsSource="{Binding COMList}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <materialDesign:Card Margin="0" Padding="5" Background="White">
+                                    <TextBlock Text="{Binding}" FontSize="11" Foreground="Black" TextWrapping="Wrap"/>
+                                </materialDesign:Card>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
             </Grid>
         </materialDesign:Card>
 

@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
+using System.Management;
 using System.Windows;
 using System.Windows.Controls;
 using wpfGMTraceability.Helpers;
@@ -14,7 +16,7 @@ namespace wpfGMTraceability.Views
     /// </summary>
     public partial class ConfigWindow : Window
     {
-        //private SerialPortManager _serialManager = new SerialPortManager();
+        public ObservableCollection<string> COMList { get; set; } = new ObservableCollection<string>();
         public ConfigWindow()
         {
             InitializeComponent();
@@ -112,6 +114,11 @@ namespace wpfGMTraceability.Views
             cbInPort.ItemsSource = new List<string>(ports);
             cbOutPort.ItemsSource = new List<string>(ports);
 
+            // Ejemplo de carga
+            LoadCOMs();
+
+            DataContext = this;
+
             // Cargar configuración actual
             try
             {
@@ -140,6 +147,20 @@ namespace wpfGMTraceability.Views
             {
 
             }            
+        }
+        private void LoadCOMs() {
+            var lista = new List<string>();
+            using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity WHERE Name LIKE '%(COM%'"))
+            {
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    string nombre = obj["Name"]?.ToString();         // Ej: "USB Serial Device (COM4)"
+                    string fabricante = obj["Manufacturer"]?.ToString(); // Ej: "FTDI"
+                    string id = obj["DeviceID"]?.ToString();         // Ej: "USB\\VID_0403&PID_6001\\A50285BI"
+
+                    COMList.Add($"{nombre} | {fabricante} | {id}");
+                }
+            }
         }
         #endregion
     }

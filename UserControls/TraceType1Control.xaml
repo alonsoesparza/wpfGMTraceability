@@ -19,7 +19,7 @@
             <RowDefinition Height="2" />
             <RowDefinition Height="80" />
             <RowDefinition Height="75" />
-            <RowDefinition Height="25" />
+            <RowDefinition Height="35" />
             <RowDefinition Height="80" />
             <RowDefinition Height="80" />
             <RowDefinition Height="75" />
@@ -47,7 +47,7 @@
             </materialDesign:Card>
         </StackPanel>
 
-        <TextBlock x:Name="txtLastScan" Text="..." Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3" FontSize="18" Foreground="Gray" VerticalAlignment="Center" FontWeight="Normal" Margin="18 0" />
+        <TextBlock x:Name="txtLastScan" Text="..." Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3" FontSize="18" Foreground="Gray" VerticalAlignment="Center" FontWeight="Normal" Margin="18 0 0 0" />
 
         <!-- **** Video Button **** -->
         <Button x:Name="BtnPlayVideo" Style="{StaticResource MaterialDesignFloatingActionButton}" Height="75" Width="75" BorderBrush="{x:Null}" Background="Gray" Grid.Column="4" Grid.Row="2" Margin="0 0 25 0" Foreground="White" 
@@ -73,7 +73,7 @@ HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click
                     <DockPanel Margin="2" LastChildFill="True">
                         <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Width="20" Height="20" Margin="0,0,6,0" />
                         <Border Padding="6" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
-                            <TextBlock Text="{Binding Formatted}" Foreground="Gray" FontSize="14" />
+                            <TextBlock Text="{Binding Formatted}" Foreground="White" FontSize="14" />
                         </Border>
                     </DockPanel>
                 </DataTemplate>

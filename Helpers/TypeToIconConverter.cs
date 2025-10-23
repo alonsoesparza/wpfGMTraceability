@@ -17,13 +17,13 @@ namespace wpfGMTraceability.Helpers
             //
             var Type = value as string;
             if (Type == "Error")
-                return "CloseCircleOutline";
+                return "CloseCircle";
             else if (Type == "Warning")
                 return "Alert";
             else if (Type == "Info")
                 return "information";
             else
-                return "CheckCircle";
+                return "CheckCircleOutline";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
