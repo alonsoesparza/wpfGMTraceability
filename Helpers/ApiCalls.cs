@@ -102,7 +102,7 @@ namespace wpfGMTraceability.Helpers
                 var content = new StringContent(Json, Encoding.UTF8, "application/json");
 
                 //
-                HttpResponseMessage response = await client.PostAsync(@"http://10.13.0.41:8842/insertvcdata/", content);
+                HttpResponseMessage response = await client.PostAsync(SettingsManager.APIPASSInsertUrl, content);
                 string responseContent = await response.Content.ReadAsStringAsync();
 
                 statusCode = (int)response.StatusCode;

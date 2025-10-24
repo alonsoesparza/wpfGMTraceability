@@ -3,32 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:wpfGMTraceability.Views"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="VideoTutorial" Height="720" Width="1280" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Video_Window_Loaded">
+        Title="VideoTutorial" Height="720" Width="1280"
+        WindowStyle="None" Background="Black" AllowsTransparency="False"
+        ResizeMode="NoResize"
+        Loaded="VideoWindow_Loaded">
     <Grid>
-        <materialDesign:Card Margin="0 10 0 0" UniformCornerRadius="10">
+        <materialDesign:Card Margin="0 10 0 0" UniformCornerRadius="10" Background="Black">
             <Grid>
-                <!-- Control invisible para anclar el Popup -->
-                <Border x:Name="PopupAnchor" Width="0" Height="0" />
-                
-                <wpf:WebView2 Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="webView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" />
+                <!-- Capa de imagen -->
+                <Image x:Name="ImgSlide" Stretch="UniformToFill" Visibility="Collapsed"/>
 
+                <!-- Capa de video -->
+                <MediaElement x:Name="VidSlide" LoadedBehavior="Manual" UnloadedBehavior="Stop"
+                              Stretch="UniformToFill" MediaEnded="VidSlide_MediaEnded"
+                              Volume="0" IsMuted="True" Visibility="Collapsed"/>
 
-                <Popup IsOpen="True" Placement="Relative" PlacementTarget="{Binding ElementName=PopupAnchor}"
-                        HorizontalOffset="0" VerticalOffset="320" AllowsTransparency="True" StaysOpen="True">
-                    <Button Width="45" Height="45" x:Name="BtnClose" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 0 0 0"
-                            Background="#66000000" Click="BtnClose_Click" Style="{StaticResource MaterialDesignFloatingActionButton}" BorderBrush="#66000000">
-                        <materialDesign:PackIcon Kind="Close" Height="40" Width="40" Foreground="White" />
-                    </Button>
-                </Popup>
+                <!-- Overlay de fundido -->
+                <Rectangle x:Name="FadeOverlay" Fill="Black" Opacity="0"/>
 
+                <!-- Botón cerrar -->
+                <Button Width="45" Height="45" x:Name="BtnClose"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
+                        Background="#66000000" Click="BtnClose_Click"
+                        Style="{StaticResource MaterialDesignFloatingActionButton}"
+                        BorderBrush="#66000000">
+                    <materialDesign:PackIcon Kind="Close" Height="40" Width="40" Foreground="White" />
+                </Button>
             </Grid>
         </materialDesign:Card>
-        
-        
     </Grid>
 </Window>

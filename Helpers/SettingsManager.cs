@@ -17,7 +17,7 @@ namespace wpfGMTraceability.Helpers
         public static string APILoadBOMUrl;
         public static string APIRequestBoxUrl;
         public static string APIConsumeSerialUrl;
-        public static string APIPASSInsertUrl;
+        public static string APIPASSInsertUrl { get; set; }
         public static string TraceType { get; set; }
     }
 }

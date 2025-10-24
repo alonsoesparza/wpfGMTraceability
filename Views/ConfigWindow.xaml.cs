@@ -73,7 +73,8 @@ namespace wpfGMTraceability.Views
                 APIBoxRequestUrl = (txtAPIRequestBoxUrl.Text == null) ? "http://localhost/" : txtAPIRequestBoxUrl.Text.Trim().ToString(),
                 APISerialConsumeUrl = (txtAPIConsumeUrl.Text == null) ? "http://localhost/" : txtAPIConsumeUrl.Text.Trim().ToString(),
                 TraceType = valTypeTrace.ToString(),
-                VideoURL = (txtVideo.Text == null) ? "http://localhost" : txtVideo.Text.Trim().ToString()
+                VideoURL = (txtVideo.Text == null) ? "http://localhost" : txtVideo.Text.Trim().ToString(),
+                APIInsert = (txtApiInsert.Text == null) ? "http://localhost" : txtApiInsert.Text.Trim().ToString()
             };
 
             var jsonSettings = JsonConvert.SerializeObject(configSettings, Formatting.Indented);
@@ -131,6 +132,8 @@ namespace wpfGMTraceability.Views
                 txtAPIRequestBoxUrl.Text = _config.APIBoxRequestUrl;
                 txtAPIConsumeUrl.Text = _config.APISerialConsumeUrl;
                 txtVideo.Text = _config.VideoURL;
+                txtApiInsert.Text = _config.APIInsert;
+                
 
                 SerialPortConfig _configPorts;
                 var jsonPorts = System.IO.File.ReadAllText(SettingsManager.ConfigPortsFilePath);

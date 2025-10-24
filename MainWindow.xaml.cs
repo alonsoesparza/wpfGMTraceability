@@ -42,6 +42,7 @@ namespace wpfGMTraceability
             SettingsManager.APILoadBOMUrl = _config.APILoadBOMUrl;
             SettingsManager.APIRequestBoxUrl = _config.APIBoxRequestUrl;
             SettingsManager.APIConsumeSerialUrl = _config.APISerialConsumeUrl;
+            SettingsManager.APIPASSInsertUrl = _config.APIInsert;
 
             //*******Load Ports Config********
             RenderPages.Children.Clear();

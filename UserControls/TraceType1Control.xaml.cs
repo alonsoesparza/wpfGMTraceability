@@ -123,10 +123,11 @@ namespace wpfGMTraceability.UserControls
                     string PortResponse = writer.WriteAndRead($"{Res}{Environment.NewLine}");
                     //Recibir Datos del arduino
                     PortResponse = PortResponse.Replace("\r", "");
+                    string serialclean = serial.Replace("\r", "");
                     if (PortResponse == "PASS") { 
                         var jsonEntry = new
                         {
-                            SerialNumber = serial,
+                            SerialNumber = serialclean,
                             State = "OK",
                             Day = $@"{DateTime.Now.Year}-{DateTime.Now.Month.ToString().PadLeft(2,'0')}-{DateTime.Now.Day.ToString().PadLeft(2, '0')}",
                             Hour = DateTime.Now.ToString("HH:mm"),
