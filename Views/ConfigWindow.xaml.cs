@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
@@ -66,6 +68,7 @@ namespace wpfGMTraceability.Views
                 StopBits = StopBits.One
             };
 
+            string sTargetVideoPath = Path.Combine(SettingsManager.AppFolderPath, txtVideoPath.Text);
             var configSettings = new SettingsConfig
             {
                 APIUrl = (txtAPIUrl.Text == null) ? "http://localhost/" : txtAPIUrl.Text.Trim().ToString(),
@@ -73,8 +76,8 @@ namespace wpfGMTraceability.Views
                 APIBoxRequestUrl = (txtAPIRequestBoxUrl.Text == null) ? "http://localhost/" : txtAPIRequestBoxUrl.Text.Trim().ToString(),
                 APISerialConsumeUrl = (txtAPIConsumeUrl.Text == null) ? "http://localhost/" : txtAPIConsumeUrl.Text.Trim().ToString(),
                 TraceType = valTypeTrace.ToString(),
-                VideoURL = (txtVideo.Text == null) ? "http://localhost" : txtVideo.Text.Trim().ToString(),
-                APIInsert = (txtApiInsert.Text == null) ? "http://localhost" : txtApiInsert.Text.Trim().ToString()
+                VideoURL = (sTargetVideoPath == null) ? @"C:\" : sTargetVideoPath.Trim().ToString(),
+                APIInsert = (txtApiInsert.Text == null) ? @"C:\" : txtApiInsert.Text.Trim().ToString()
             };
 
             var jsonSettings = JsonConvert.SerializeObject(configSettings, Formatting.Indented);
@@ -131,7 +134,7 @@ namespace wpfGMTraceability.Views
                 txtAPIBOMUrl.Text = _config.APILoadBOMUrl;
                 txtAPIRequestBoxUrl.Text = _config.APIBoxRequestUrl;
                 txtAPIConsumeUrl.Text = _config.APISerialConsumeUrl;
-                txtVideo.Text = _config.VideoURL;
+                txtVideoPath.Text = _config.VideoURL;
                 txtApiInsert.Text = _config.APIInsert;
                 
 
@@ -166,5 +169,34 @@ namespace wpfGMTraceability.Views
             }
         }
         #endregion
+
+        private void btnLoadFile_Click(object sender, RoutedEventArgs e)
+        {
+            var wDialog = new OpenFileDialog
+            {
+                Title = "Selecciona tu archivo",
+                Filter = "Todos los archivos (*.*)|*.*"
+            };
+
+            if (wDialog.ShowDialog() == true)
+            {
+                string sFilePath = wDialog.FileName;
+                string sFileName = Path.GetFileName(sFilePath);
+                txtVideoPath.Text = sFileName;
+
+                string sTarget = Path.Combine(SettingsManager.AppFolderPath, sFileName);
+
+                try
+                {
+                    File.Copy(sFilePath, sTarget, overwrite: true);
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show($"Error al copiar el archivo:\n{ex.Message}", "Error");
+                    txtVideoPath.Text = ex.Message;
+                }
+
+            }
+        }
     }
 }

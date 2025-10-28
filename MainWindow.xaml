@@ -33,7 +33,7 @@
                         </Button>
                     </Grid>
                 </Grid>
-                <Grid Grid.Row="1" Background="#F6F5F8" Name="RenderPages"></Grid>
+                <Grid Grid.Row="1" Background="#C4C4C4" Name="RenderPages"></Grid>
             </Grid>
         </materialDesign:Card>
 
