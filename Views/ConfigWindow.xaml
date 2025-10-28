@@ -6,18 +6,18 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:wpfGMTraceability.Views"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="OptionsWindow" Height="520" Width="800" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Config_Window_Loaded">
+        Title="OptionsWindow" Height="620" Width="900" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Config_Window_Loaded">
     <Grid>
         <materialDesign:Card Margin="0" UniformCornerRadius="10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*" />
-                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="1.5*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="0.9*" />
+                    <RowDefinition Height="1.8*" />
+                    <RowDefinition Height="4*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" LastChildFill="False">
@@ -28,66 +28,127 @@
                     <TextBlock Text="Configurar" FontSize="28" HorizontalAlignment="Center" Margin="0 10 0 20" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
                 </StackPanel>
 
-                <Border BorderBrush="Gray" Grid.Column="0" Grid.Row="1" BorderThickness="1" Margin="10 0 10 5" CornerRadius="4">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  Orientation="Horizontal">
-                        <StackPanel Margin="0 10 10 0">
-                            <TextBlock Text="Puerto COM Entrada:" Margin="0,0,0,5"/>
-                            <ComboBox x:Name="cbInPort" Margin="0,0,0,20"/>
-                        </StackPanel>
-                        <StackPanel Margin="0 10 10 0">
-                            <TextBlock Text="Puerto COM Salida:" Margin="0,0,0,5"/>
-                            <ComboBox x:Name="cbOutPort" Margin="0,0,0,0"/>
-                        </StackPanel>
+                <Grid Grid.Column="0" Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                        <StackPanel Margin="0 10 10 0">
-                            <TextBlock Text="Tipo Traceabilidad:" Margin="0,0,0,5"/>
-                            <ComboBox x:Name="cbTraceType" Margin="0,0,0,0">
-                                <ComboBoxItem Content="Tipo 1" />
-                                <ComboBoxItem Content="Tipo 2" />
-                                <ComboBoxItem Content="Tipo 3" />
-                            </ComboBox>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
+                    <materialDesign:Card Margin="10 10 10 10" Padding="0" Grid.Row="0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                <Border BorderBrush="Gray" Grid.Column="0" Grid.Row="2" BorderThickness="1" Margin="10 0 10 5" CornerRadius="4">
-                    <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                            <StackPanel Margin="10">
-                                <TextBlock Text="API SerialCheck Url:" Margin="0,0,0,5"/>
-                                <TextBox x:Name="txtAPIUrl" Margin="0,0,0,20"/>
-                            </StackPanel>
-                            <StackPanel Margin="10">
-                                <TextBlock Text="API Load BOM Url:" Margin="0,0,0,5"/>
-                                <TextBox x:Name="txtAPIBOMUrl" Margin="0,0,0,20"/>
-                            </StackPanel>
-                        </StackPanel>
+                            <Border Background="#858585" Grid.Row="0" Padding="5" BorderThickness="1" BorderBrush="#858585">
+                                <TextBlock Text="Puertos COM / Traceabilidad" Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+                            </Border>
 
-                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                            <StackPanel Margin="10">
-                                <TextBlock Text="API Serial Box Request Url:" Margin="0,0,0,5"/>
-                                <TextBox x:Name="txtAPIRequestBoxUrl" Margin="0,0,0,20"/>
-                            </StackPanel>
-                            <StackPanel Margin="10">
-                                <TextBlock Text="API Serial Consume Url:" Margin="0,0,0,5"/>
-                                <TextBox x:Name="txtAPIConsumeUrl" Margin="0,0,0,20"/>
-                            </StackPanel>
-                        </StackPanel>
+                            <StackPanel Grid.Row="1" Margin="12">
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  Orientation="Horizontal">
+                                    <StackPanel Margin="0 10 20 0">
+                                        <TextBlock Text="Puerto COM Entrada:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
+                                        <ComboBox x:Name="cbInPort" FontSize="16" Margin="0,0,0,20"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0 10 20 0">
+                                        <TextBlock Text="Puerto COM Salida:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
+                                        <ComboBox x:Name="cbOutPort" FontSize="16" Margin="0,0,0,0"/>
+                                    </StackPanel>
 
-                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                            <StackPanel Margin="10">
-                                <TextBlock Text="URL video:" Margin="0,0,0,5"/>
-                                <TextBox x:Name="txtVideo" Margin="0,0,0,20"/>
+                                    <StackPanel Margin="0 10 10 0">
+                                        <TextBlock Text="Tipo Traceabilidad:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
+                                        <ComboBox x:Name="cbTraceType" FontSize="16" Margin="0,0,0,0">
+                                            <ComboBoxItem Content="Tipo 1" />
+                                            <ComboBoxItem Content="Tipo 2" />
+                                            <ComboBoxItem Content="Tipo 3" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                </StackPanel>
                             </StackPanel>
-                            <StackPanel Margin="10">
-                                <TextBlock Text="Api Insert:" Margin="0,0,0,5"/>
-                                <TextBox x:Name="txtApiInsert" Margin="0,0,0,20"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
+                        </Grid>
+                    </materialDesign:Card>
+                </Grid>
 
-                <Button x:Name="btnSaveAndReconnect" Grid.Column="0" Grid.Row="3" Margin="10 0 10 0" Content="Guardar y Reconectar" Click="btnSaveAndReconnect_Click"/>
+                <Grid Grid.Row="2" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <materialDesign:Card Margin="10 10 10 10" Padding="0" Grid.Row="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Background="#858585" Grid.Row="0" Padding="5" BorderThickness="1" BorderBrush="#858585">
+                                <TextBlock Text="APIs / Video" Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border BorderThickness="1" CornerRadius="4" Margin="4" Padding="2" Grid.Row="0" Grid.Column="0" BorderBrush="Black" >
+                                    <StackPanel>
+                                        <TextBlock Text="API SerialCheck Url:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,6"/>
+                                        <TextBox x:Name="txtAPIUrl" FontSize="14" Margin="0,0,0,20"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border BorderThickness="1" CornerRadius="4" Margin="4" Padding="2" Grid.Row="1" Grid.Column="0" BorderBrush="Black" >
+                                    <StackPanel>
+                                        <TextBlock Text="API Load BOM Url:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,6"/>
+                                        <TextBox x:Name="txtAPIBOMUrl" FontSize="14" Margin="0,0,0,20"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border BorderThickness="1" CornerRadius="4" Margin="4" Padding="2" Grid.Row="2" Grid.Column="0" BorderBrush="Black" >
+                                    <StackPanel>
+                                        <TextBlock Text="API Serial Box Request Url:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,6"/>
+                                        <TextBox x:Name="txtAPIRequestBoxUrl" FontSize="14" Margin="0,0,0,20"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border BorderThickness="1" CornerRadius="4" Margin="4" Padding="2" Grid.Row="0" Grid.Column="1" BorderBrush="Black" >
+                                    <StackPanel>
+                                        <TextBlock Text="API Serial Consume Url:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,6"/>
+                                        <TextBox x:Name="txtAPIConsumeUrl" FontSize="14" Margin="0,0,0,20"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border BorderThickness="1" CornerRadius="4" Margin="4" Padding="2" Grid.Row="1" Grid.Column="1" BorderBrush="Black" >
+                                    <StackPanel>
+                                        <TextBlock Text="Api Insert:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,6"/>
+                                        <TextBox x:Name="txtApiInsert" FontSize="14" Margin="0,0,0,20"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <Border BorderThickness="1" CornerRadius="4" Margin="4" Padding="2" Grid.Row="2" Grid.Column="1" BorderBrush="Black" >
+                                    <StackPanel>
+                                        <TextBlock Text="Archivo video" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,6"/>
+                                        <Button x:Name="btnLoadFile" Style="{StaticResource MaterialDesignRaisedButton}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="6" Click="btnLoadFile_Click">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <materialDesign:PackIcon Kind="FolderOpen" Width="24" Height="24" Margin="0,0,8,0"/>
+                                                <TextBlock Text="Cargar archivo" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <TextBlock x:Name="txtVideoPath" FontSize="12" Text=".." VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </materialDesign:Card>
+                </Grid>
+
+                <Button x:Name="btnSaveAndReconnect" FontSize="16" Grid.Column="0" Grid.Row="3" Margin="10 0 10 0" Content="Guardar y Reconectar" Click="btnSaveAndReconnect_Click"/>
 
                 <Border BorderBrush="Gray" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" BorderThickness="1" Margin="0 0 10 5" CornerRadius="4">
                     <ListBox x:Name="lbCOMs" Margin="10" ItemsSource="{Binding COMList}">

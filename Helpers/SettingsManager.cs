@@ -13,6 +13,7 @@ namespace wpfGMTraceability.Helpers
         public static string ConfigPortsFilePath = $@"{AppFolderPath}DATA\Ports.json";
         public static string ConfigWritePortsFilePath = $@"{AppFolderPath}DATA\WPorts.json";
         public static string SerialPortStatusMessage = "...";
+        public static string VideoFileName = "...";
         public static string APIUrlCheckSerial { get; set; }
         public static string APILoadBOMUrl;
         public static string APIRequestBoxUrl;

@@ -17,20 +17,18 @@
                 <Image x:Name="ImgSlide" Stretch="UniformToFill" Visibility="Collapsed"/>
 
                 <!-- Capa de video -->
-                <MediaElement x:Name="VidSlide" LoadedBehavior="Manual" UnloadedBehavior="Stop"
-                              Stretch="UniformToFill" MediaEnded="VidSlide_MediaEnded"
-                              Volume="0" IsMuted="True" Visibility="Collapsed"/>
+                <MediaElement x:Name="VidSlide" Margin="0 0 0 10" LoadedBehavior="Manual" UnloadedBehavior="Stop" Stretch="Uniform" Visibility="Visible"/>
 
                 <!-- Overlay de fundido -->
                 <Rectangle x:Name="FadeOverlay" Fill="Black" Opacity="0"/>
 
                 <!-- Botón cerrar -->
                 <Button Width="45" Height="45" x:Name="BtnClose"
-                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 15 0"
                         Background="#66000000" Click="BtnClose_Click"
                         Style="{StaticResource MaterialDesignFloatingActionButton}"
                         BorderBrush="#66000000">
-                    <materialDesign:PackIcon Kind="Close" Height="40" Width="40" Foreground="White" />
+                    <materialDesign:PackIcon Kind="Close" Height="50" Width="50" Foreground="White" />
                 </Button>
             </Grid>
         </materialDesign:Card>
