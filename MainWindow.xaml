@@ -7,46 +7,48 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"        
         mc:Ignorable="d" WindowState="Maximized"
         WindowStyle="None" ResizeMode="NoResize" Height="720" Width="1280" Background="{x:Null}" AllowsTransparency="True" Loaded="Main_Window_Loaded" Closing="Main_Window_Closing">
-    <Grid>
-        <materialDesign:Card Margin="0" UniformCornerRadius="10">
+        <materialDesign:DialogHost Identifier="StartupDialog">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="70"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2.5*" />
-                        <ColumnDefinition Width="0.5*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0" Grid.ColumnSpan="2" Margin="0 0 0 0">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontWeight="ExtraBold" FontSize="14" Text="&#xF06C;" FontFamily="wingdings" VerticalAlignment="Center" Foreground="Green" />
-                            <TextBlock x:Name="txtBTitle" Text="ESTACION #5 - DESFORRE" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="30" Margin="5 0 10 0" />
-                        </StackPanel>
+                <materialDesign:Card Margin="0" UniformCornerRadius="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="70"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2.5*" />
+                                <ColumnDefinition Width="0.5*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" Grid.ColumnSpan="2" Margin="0 0 0 0">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock FontWeight="ExtraBold" FontSize="14" Text="&#xF06C;" FontFamily="wingdings" VerticalAlignment="Center" Foreground="Green" />
+                                    <TextBlock x:Name="txtBTitle" Text="ESTACION #5 - DESFORRE" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="30" Margin="5 0 10 0" />
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Column="1" Margin="0 0 10 0">
+                                <Button Style="{StaticResource MaterialDesignFloatingActionButton}" x:Name="OpenOptions" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" Click="OpenOptions_Click" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <StackPanel >
+                                        <materialDesign:PackIcon Margin="0 0 6 0" Width="56" Height="56" Kind="ViewHeadline" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                        <Grid Grid.Row="1" Background="#C4C4C4" Name="RenderPages"></Grid>
                     </Grid>
-                    <Grid Grid.Column="1" Margin="0 0 10 0">
-                        <Button Style="{StaticResource MaterialDesignFloatingActionButton}" x:Name="OpenOptions" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="Black" Click="OpenOptions_Click" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <StackPanel >
-                                <materialDesign:PackIcon Margin="0 0 6 0" Width="56" Height="56" Kind="ViewHeadline" />
-                            </StackPanel>
-                        </Button>
-                    </Grid>
+                </materialDesign:Card>
+
+                <!-- Overlay oscuro para fondo -->
+                <Grid x:Name="OverlayOscuro" Background="#80000000" Visibility="Collapsed" Panel.ZIndex="99" />
+
+                <!-- Overlay oscuro para carga -->
+                <Grid x:Name="LoadingOverlay" Background="#80000000" Visibility="Collapsed" HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch" Panel.ZIndex="999">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ProgressBar Width="50" Height="50" Foreground="OrangeRed" IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" />
+                        <TextBlock Text="Validando escaneo..." Foreground="White" FontSize="16" Margin="0,12,0,0" HorizontalAlignment="Center" />
+                    </StackPanel>
                 </Grid>
-                <Grid Grid.Row="1" Background="#C4C4C4" Name="RenderPages"></Grid>
             </Grid>
-        </materialDesign:Card>
-
-        <!-- Overlay oscuro para fondo -->
-        <Grid x:Name="OverlayOscuro" Background="#80000000" Visibility="Collapsed" Panel.ZIndex="99" />
-
-        <!-- Overlay oscuro para carga -->
-        <Grid x:Name="LoadingOverlay" Background="#80000000" Visibility="Collapsed" HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch" Panel.ZIndex="999">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ProgressBar Width="50" Height="50" Foreground="OrangeRed" IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" />
-                <TextBlock Text="Validando escaneo..." Foreground="White" FontSize="16" Margin="0,12,0,0" HorizontalAlignment="Center" />
-            </StackPanel>
-        </Grid>
-    </Grid>
+        </materialDesign:DialogHost>
 </Window>

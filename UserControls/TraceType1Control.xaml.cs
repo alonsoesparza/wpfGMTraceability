@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
-using System.IO.Ports;
 using System.Linq;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -14,24 +15,21 @@ using wpfGMTraceability.Views;
 
 namespace wpfGMTraceability.UserControls
 {
-    /// <summary>
-    /// Interaction logic for TraceType1Control.xaml
-    /// </summary>
     public partial class TraceType1Control : UserControl, IOverlayAware
     {
         #region Inicialización y carga
-        //private SerialWriter writer;
         private SerialWriterReader writer;
         private SerialPortSession _session;
         ObservableCollection<ScanLogItem> logItems = new ObservableCollection<ScanLogItem>();
         DispatcherTimer cleanTimer;
+        private readonly SemaphoreSlim _scanLock = new SemaphoreSlim(1, 1);
         public event EventHandler ShowLoadOverlay;
         public event EventHandler HideLoadOverlay;
         public TraceType1Control()
         {
             InitializeComponent();
-            SerialPortConfig _config;
 
+            SerialPortConfig _config;
             var json = System.IO.File.ReadAllText(SettingsManager.ConfigPortsFilePath);
             _config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
 
@@ -59,7 +57,7 @@ namespace wpfGMTraceability.UserControls
         }
         #endregion
 
-        #region Eventos del sistema
+        #region Eventos UI
         private void BtnPlayVideo_Click(object sender, RoutedEventArgs e)
         {
             var ventana = Window.GetWindow(this) as MainWindow;
@@ -72,100 +70,137 @@ namespace wpfGMTraceability.UserControls
             ventana?.MostrarOverlay(false);
         }
         #endregion
-        
-        #region Eventos de comunicación
-        private void OnSerialData(object sender, string data)
-        {            
 
+        #region Recepción Serial
+        private void OnSerialData(object sender, string data)
+        {
             Dispatcher.Invoke(() =>
             {
-                string sLastData = "";
-                sLastData = txtScanCode.Text;
+                string sLastData = txtScanCode.Text;
                 txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}";
                 txtScanCode.Text = $"Escaneado: {data}";
-                CheckSerialNumber(data);
             });
+
+            _ = CheckSerialNumberAsync(data); // ejecuta sin bloquear UI
         }
         #endregion
-        
-        #region Funciones de negocio / lógica principal
-        private async void CheckSerialNumber(string serial)
+
+        #region Lógica principal
+        private async Task CheckSerialNumberAsync(string serial)
         {
+            await _scanLock.WaitAsync();
             try
             {
-                ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
                 var result = await ApiCalls.GetFromApiAsync($@"{SettingsManager.APIUrlCheckSerial}{serial.Trim()}");
-                HideLoadOverlay?.Invoke(this, EventArgs.Empty);
+
                 string Res = "NO_RESPONSE";
-                string ResLogType = "";
-                if (result.content != null)
+                string ResLogType = "Error";
+
+                var content = result.content ?? string.Empty;
+                if (!string.IsNullOrWhiteSpace(content))
                 {
-                    switch (Convert.ToString(result.content)?.Trim().Replace("\"", ""))
+                    switch (content.Trim().Replace("\"", ""))
                     {
                         case "0":
-                            Res = $"NO_OK";
-                            ResLogType = $"Error";
+                            Res = "NO_OK";
+                            ResLogType = "Error";
                             break;
-
                         case "1":
-                            Res = $"OK";
-                            ResLogType = $"OK";
+                            Res = "OK";
+                            ResLogType = "OK";
                             break;
-
                         default:
-                            Res = $"NO_RESPONSE";
-                            ResLogType = $"Error";
+                            Res = "NO_RESPONSE";
+                            ResLogType = "Error";
                             break;
                     }
 
-                    Dispatcher.Invoke(() => AddLog($"Serie {serial} / {Res}{Environment.NewLine} / {result.statusCode}", ResLogType));
-                    //writer.Write($"{Res}{Environment.NewLine}");
-                    string PortResponse = writer.WriteAndRead($"{Res}{Environment.NewLine}");
-                    //Recibir Datos del arduino
-                    PortResponse = PortResponse.Replace("\r", "");
-                    string serialclean = serial.Replace("\r", "");
-                    if (PortResponse == "PASS") { 
-                        var jsonEntry = new
+                    Dispatcher.Invoke(() =>
+                        AddLog("[SERIAL CHECK]",$"[Serie]: {serial}[API Response]: {Res}{Environment.NewLine}[API Status]: {result.statusCode}", ResLogType));
+
+                    string serialclean = serial.Replace("\r", "").Replace("\n", "");
+
+                    if (Res == "OK")
+                    {
+                        ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
+
+                        bool isPass = await writer.WriteAndWaitForAsync($"{Res}\n", "PASS", overallTimeoutMs: null);
+
+                        HideLoadOverlay?.Invoke(this, EventArgs.Empty);
+
+                        if (isPass)
                         {
-                            SerialNumber = serialclean,
-                            State = "OK",
-                            Day = $@"{DateTime.Now.Year}-{DateTime.Now.Month.ToString().PadLeft(2,'0')}-{DateTime.Now.Day.ToString().PadLeft(2, '0')}",
-                            Hour = DateTime.Now.ToString("HH:mm"),
-                            C1 = "1",
-                            C2 = "2",
-                            C3 = "3",
-                            C4 = "4",
-                            C5 = "5",
-                            C6 = "6",
-                            C7 = "7",
-                            C8 = "8",
-                            C9 = "9",
-                            C10 = "0"
-                        };
+                            var jsonEntry = new
+                            {
+                                SerialNumber = serialclean,
+                                State = "OK",
+                                Day = $@"{DateTime.Now:yyyy-MM-dd}",
+                                Hour = DateTime.Now.ToString("HH:mm"),
+                                C1 = "1",
+                                C2 = "2",
+                                C3 = "3",
+                                C4 = "4",
+                                C5 = "5",
+                                C6 = "6",
+                                C7 = "7",
+                                C8 = "8",
+                                C9 = "9",
+                                C10 = "0"
+                            };
 
-                        string jsonFinal = JsonConvert.SerializeObject(jsonEntry, Formatting.None);
+                            string jsonFinal = JsonConvert.SerializeObject(jsonEntry, Formatting.None);
+                            var resInsert = await ApiCalls.PostAPIPASSInsert(jsonFinal);
 
-                        var resInsert = await ApiCalls.PostAPIPASSInsert(jsonFinal);
+                            if (resInsert.statusCode == (int)HttpStatusCode.OK)
+                            {
+                                Dispatcher.Invoke(() =>
+                                    AddLog("[API INSERT]",$"[Serie] {serialclean}{Environment.NewLine}[API Response]: INSERT OK{Environment.NewLine}[API Status]: {resInsert.statusCode}", "OK"));
+                            }
+                            else
+                            {
+                                Dispatcher.Invoke(() =>
+                                    AddLog("[API INSERT]", $"Serie {serialclean}{Environment.NewLine}[API Response]: INSERT FALLÓ{Environment.NewLine}[API Status]:{resInsert.statusCode}", "Error"));
+                            }
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() =>
+                                AddLog("[API INSERT]", $"[Serie]: {serialclean} / Esperando PASS del Arduino...", "Error"));
+                        }
+                    }
+                    else if (Res == "NO_OK")
+                    {
+                        // NO_OK → no mostrar mensaje adicional
+                        await writer.WriteAsync($"{Res}\n"); // opcional; quítalo si no deseas enviar nada al Arduino
                     }
                     else
                     {
-
+                        // NO_RESPONSE u otros
+                        await writer.WriteAsync($"{Res}\n");
                     }
                 }
                 else
                 {
-                    Dispatcher.Invoke(() => AddLog($@"Error {serial} / {Res}{Environment.NewLine} / {result.statusCode}", "Error",false));
-                    writer.Write($"{Res}{Environment.NewLine}");
+                    Dispatcher.Invoke(() =>
+                        AddLog("[SERIAL CHECK]", $@"Error {serial} / NO_RESPONSE{Environment.NewLine} / {result.statusCode}", "SystemError"));
+
+                    await writer.WriteAsync("NO_RESPONSE\n");
                 }
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() => AddLog($@"Serie Validada {serial} / {ex.Message}", "Error"));
+                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", $@"[Serie Validada]: {serial} / {ex.Message}", "SystemError"));
+            }
+            finally
+            {
+                try { HideLoadOverlay?.Invoke(this, EventArgs.Empty); } catch { }
+                _scanLock.Release();
             }
         }
+
         private void CleanLogs()
         {
-            var haceUnMinuto = DateTime.Now.AddMinutes(-1);
+            var haceUnMinuto = DateTime.Now.AddMinutes(-5);
             var recientes = logItems.Where(log => log.Persistent || log.Timestamp >= haceUnMinuto).ToList();
 
             logItems.Clear();
@@ -173,7 +208,7 @@ namespace wpfGMTraceability.UserControls
                 logItems.Add(log);
         }
         #endregion
-        
+
         #region Liberación de recursos
         private void TraceType1_Control_Unloaded(object sender, RoutedEventArgs e)
         {
@@ -181,12 +216,13 @@ namespace wpfGMTraceability.UserControls
             writer.ClosePort();
         }
         #endregion
-        
-        #region Logging y diagnóstico
-        public void AddLog(string mensaje, string tipo, bool persistente = false)
+
+        #region Logging
+        public void AddLog(string titleItem,string mensaje, string tipo, bool persistente = false)
         {
             var nuevoLog = new ScanLogItem
             {
+                Title = titleItem,
                 Msj = mensaje,
                 MsjType = tipo,
                 Timestamp = DateTime.Now,
@@ -195,6 +231,7 @@ namespace wpfGMTraceability.UserControls
 
             logItems.Add(nuevoLog);
             lbLog.ScrollIntoView(nuevoLog);
+
         }
         #endregion
     }

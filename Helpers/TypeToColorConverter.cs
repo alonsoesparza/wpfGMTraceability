@@ -16,6 +16,8 @@ namespace wpfGMTraceability.Helpers
                 return Brushes.Orange;
             else if (Type == "Info")
                 return Brushes.SkyBlue;
+            else if (Type == "SystemError")
+                return Brushes.Gray;
             else
                 return Brushes.Green;
         }

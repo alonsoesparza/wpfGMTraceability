@@ -181,6 +181,9 @@
     <Compile Include="Models\ScanLogItem.cs" />
     <Compile Include="Models\StationConnector.cs" />
     <Compile Include="Models\StationConnectorPayload.cs" />
+    <Compile Include="UserControls\TitleChangeDialog.xaml.cs">
+      <DependentUpon>TitleChangeDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\TraceType1Control.xaml.cs">
       <DependentUpon>TraceType1Control.xaml</DependentUpon>
     </Compile>
@@ -215,6 +218,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UserControls\TitleChangeDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\TraceType1Control.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

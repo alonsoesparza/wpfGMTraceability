@@ -169,7 +169,6 @@ namespace wpfGMTraceability.Views
             }
         }
         #endregion
-
         private void btnLoadFile_Click(object sender, RoutedEventArgs e)
         {
             var wDialog = new OpenFileDialog

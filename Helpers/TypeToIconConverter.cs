@@ -21,7 +21,9 @@ namespace wpfGMTraceability.Helpers
             else if (Type == "Warning")
                 return "Alert";
             else if (Type == "Info")
-                return "information";
+                return "Info";
+            else if (Type == "SystemError")
+                return "AlertBox";
             else
                 return "CheckCircleOutline";
         }

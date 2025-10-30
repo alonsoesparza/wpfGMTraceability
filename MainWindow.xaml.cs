@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Threading;
 using wpfGMTraceability.Helpers;
 using wpfGMTraceability.Managers;
 using wpfGMTraceability.UserControls;
@@ -18,7 +21,7 @@ namespace wpfGMTraceability
         {
             InitializeComponent();
         }
-        private void Main_Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Main_Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (!File.Exists(SettingsManager.ConfigPortsFilePath))
             {
@@ -56,7 +59,7 @@ namespace wpfGMTraceability
                 {
                     case "Tipo 1":
                         //Title = "GM Traceability - Tipo 1";
-                        myUsrCtrl = new TraceType1Control();
+                        myUsrCtrl = new TraceType1Control();                        
                         break;
                     case "Tipo 2":
                         //Title = "GM Traceability - Tipo 1";
@@ -75,9 +78,19 @@ namespace wpfGMTraceability
                         overlayAware.HideLoadOverlay += (s, ee) => LoadingOverlay.Visibility = Visibility.Collapsed;
                     }
 
-                    RenderPages.Children.Add(myUsrCtrl);
-                }
+                    await Dispatcher.InvokeAsync(async () =>
+                    {
+                        var dialog = new TitleChangeDialog();
+                        var result = await DialogHost.Show(dialog, "StartupDialog");
 
+                        if (result is string windowName && !string.IsNullOrWhiteSpace(windowName))
+                        {
+                            txtBTitle.Text = $"ESTACIÓN - {windowName.ToUpper()}";
+                            RenderPages.Children.Clear();
+                            RenderPages.Children.Add(myUsrCtrl);
+                        }
+                    }, DispatcherPriority.Loaded);
+                }
             }
             catch (System.IO.IOException exIO)
             {
@@ -104,6 +117,7 @@ namespace wpfGMTraceability
         {
             OverlayOscuro.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
         }
+      
         #endregion
         private void Main_Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
