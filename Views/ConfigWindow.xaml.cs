@@ -77,7 +77,8 @@ namespace wpfGMTraceability.Views
                 APISerialConsumeUrl = (txtAPIConsumeUrl.Text == null) ? "http://localhost/" : txtAPIConsumeUrl.Text.Trim().ToString(),
                 TraceType = valTypeTrace.ToString(),
                 VideoURL = (sTargetVideoPath == null) ? @"C:\" : sTargetVideoPath.Trim().ToString(),
-                APIInsert = (txtApiInsert.Text == null) ? @"C:\" : txtApiInsert.Text.Trim().ToString()
+                APIInsert = (txtApiInsert.Text == null) ? @"C:\" : txtApiInsert.Text.Trim().ToString(),
+                TraceType1WindowName = (String.IsNullOrWhiteSpace(txtWindowName.Text)) ? "NONAME" : txtWindowName.Text.Trim().ToString()
             };
 
             var jsonSettings = JsonConvert.SerializeObject(configSettings, Formatting.Indented);
@@ -136,6 +137,7 @@ namespace wpfGMTraceability.Views
                 txtAPIConsumeUrl.Text = _config.APISerialConsumeUrl;
                 txtVideoPath.Text = _config.VideoURL;
                 txtApiInsert.Text = _config.APIInsert;
+                txtWindowName.Text = _config.TraceType1WindowName;
                 
 
                 SerialPortConfig _configPorts;
@@ -195,6 +197,21 @@ namespace wpfGMTraceability.Views
                     txtVideoPath.Text = ex.Message;
                 }
 
+            }
+        }
+
+        private void cbTraceType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbTraceType.SelectedItem is ComboBoxItem item && item.Content.ToString() == "Tipo 1")
+            {
+                txbTitleWindowName.Visibility = Visibility.Visible;
+                txtWindowName.Visibility= Visibility.Visible;
+            }
+            else
+            {
+                txbTitleWindowName.Visibility = Visibility.Hidden;
+                txtWindowName.Visibility = Visibility.Hidden;
+                //txtWindowName.Clear();
             }
         }
     }

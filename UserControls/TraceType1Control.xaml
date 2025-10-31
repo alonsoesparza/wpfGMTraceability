@@ -68,7 +68,7 @@ HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click
         <materialDesign:PackIcon Margin="0 0 6 0" Width="56" Height="56" Kind="ViewHeadline" />
         -->
 
-        <materialDesign:Card Margin="10 10 10 10" Grid.ColumnSpan="3" Grid.Row="7" Grid.Column="0" Padding="0" materialDesign:ElevationAssist.Elevation="Dp8">
+        <materialDesign:Card Margin="10 10 10 10" Grid.ColumnSpan="4" Grid.Row="5" Grid.RowSpan="3" Grid.Column="0" Padding="0" materialDesign:ElevationAssist.Elevation="Dp8">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -84,7 +84,7 @@ HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click
                         <DataTemplate>
                             <DockPanel Margin="0" LastChildFill="True" HorizontalAlignment="Stretch">
                                 <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Height="60" Width="60" Margin="0" />
-                                <Border Padding="4" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
+                                <Border Padding="2" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
                                     <TextBlock Text="{Binding Formatted}" Foreground="WhiteSmoke" FontSize="24" />
                                 </Border>
                             </DockPanel>

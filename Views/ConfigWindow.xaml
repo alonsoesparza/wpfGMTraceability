@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:wpfGMTraceability.Views"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="OptionsWindow" Height="620" Width="900" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Config_Window_Loaded">
+        Title="OptionsWindow" Height="620" Width="1000" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Config_Window_Loaded">
     <Grid>
         <materialDesign:Card Margin="0" UniformCornerRadius="10">
             <Grid>
@@ -45,7 +45,7 @@
                             </Border>
 
                             <StackPanel Grid.Row="1" Margin="12">
-                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  Orientation="Horizontal">
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left"  Orientation="Horizontal">
                                     <StackPanel Margin="0 10 20 0">
                                         <TextBlock Text="Puerto COM Entrada:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
                                         <ComboBox x:Name="cbInPort" FontSize="16" Margin="0,0,0,20"/>
@@ -54,14 +54,17 @@
                                         <TextBlock Text="Puerto COM Salida:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
                                         <ComboBox x:Name="cbOutPort" FontSize="16" Margin="0,0,0,0"/>
                                     </StackPanel>
-
                                     <StackPanel Margin="0 10 10 0">
                                         <TextBlock Text="Tipo Traceabilidad:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
-                                        <ComboBox x:Name="cbTraceType" FontSize="16" Margin="0,0,0,0">
+                                        <ComboBox x:Name="cbTraceType" FontSize="16" Margin="0,0,0,0" SelectionChanged="cbTraceType_SelectionChanged">
                                             <ComboBoxItem Content="Tipo 1" />
                                             <ComboBoxItem Content="Tipo 2" />
                                             <ComboBoxItem Content="Tipo 3" />
                                         </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Margin="0 10 20 0">
+                                        <TextBlock x:Name="txbTitleWindowName" Text="Titulo ventana:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5" Visibility="Hidden"/>
+                                        <TextBox x:Name="txtWindowName" materialDesign:HintAssist.Hint="Nombre de la estacion" FontSize="16" Padding="4" Visibility="Hidden"/>
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

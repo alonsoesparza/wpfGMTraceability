@@ -21,7 +21,7 @@ namespace wpfGMTraceability
         {
             InitializeComponent();
         }
-        private async void Main_Window_Loaded(object sender, RoutedEventArgs e)
+        private void Main_Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (!File.Exists(SettingsManager.ConfigPortsFilePath))
             {
@@ -47,6 +47,7 @@ namespace wpfGMTraceability
             SettingsManager.APIConsumeSerialUrl = _config.APISerialConsumeUrl;
             SettingsManager.APIPASSInsertUrl = _config.APIInsert;
             SettingsManager.VideoFileName = _config.VideoURL;
+            SettingsManager.TraceType1WindowName = _config.TraceType1WindowName;
 
             //*******Load Ports Config********
             RenderPages.Children.Clear();
@@ -59,7 +60,8 @@ namespace wpfGMTraceability
                 {
                     case "Tipo 1":
                         //Title = "GM Traceability - Tipo 1";
-                        myUsrCtrl = new TraceType1Control();                        
+                        myUsrCtrl = new TraceType1Control();
+                        this.txtBTitle.Text = SettingsManager.TraceType1WindowName;
                         break;
                     case "Tipo 2":
                         //Title = "GM Traceability - Tipo 1";
@@ -78,18 +80,19 @@ namespace wpfGMTraceability
                         overlayAware.HideLoadOverlay += (s, ee) => LoadingOverlay.Visibility = Visibility.Collapsed;
                     }
 
-                    await Dispatcher.InvokeAsync(async () =>
-                    {
-                        var dialog = new TitleChangeDialog();
-                        var result = await DialogHost.Show(dialog, "StartupDialog");
+                    //***Abrir un Dialog al iniciar, para introducir el nombre de la ventana padre
+                    //await Dispatcher.InvokeAsync(async () =>
+                    //{
+                    //    var dialog = new TitleChangeDialog();
+                    //    var result = await DialogHost.Show(dialog, "StartupDialog");
 
-                        if (result is string windowName && !string.IsNullOrWhiteSpace(windowName))
-                        {
-                            txtBTitle.Text = $"ESTACIÓN - {windowName.ToUpper()}";
-                            RenderPages.Children.Clear();
+                    //    if (result is string windowName && !string.IsNullOrWhiteSpace(windowName))
+                    //    {
+                    //        txtBTitle.Text = $"ESTACIÓN - {windowName.ToUpper()}";
+                    //        RenderPages.Children.Clear();
                             RenderPages.Children.Add(myUsrCtrl);
-                        }
-                    }, DispatcherPriority.Loaded);
+                    //    }
+                    //}, DispatcherPriority.Loaded);
                 }
             }
             catch (System.IO.IOException exIO)

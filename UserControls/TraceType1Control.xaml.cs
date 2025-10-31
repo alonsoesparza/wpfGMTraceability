@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LibVLCSharp.Shared;
+using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -77,8 +78,8 @@ namespace wpfGMTraceability.UserControls
             Dispatcher.Invoke(() =>
             {
                 string sLastData = txtScanCode.Text;
-                txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}";
-                txtScanCode.Text = $"Escaneado: {data}";
+                txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "").Trim()}";
+                txtScanCode.Text = $"Escaneado: {data.Trim()}";
             });
 
             _ = CheckSerialNumberAsync(data); // ejecuta sin bloquear UI
@@ -116,7 +117,8 @@ namespace wpfGMTraceability.UserControls
                     }
 
                     Dispatcher.Invoke(() =>
-                        AddLog("[SERIAL CHECK]",$"[Serie]: {serial}[API Response]: {Res}{Environment.NewLine}[API Status]: {result.statusCode}", ResLogType));
+                        AddLog("[SERIAL CHECK]",serial,Res,result.statusCode.ToString().Trim(),null,ResLogType)
+                    );
 
                     string serialclean = serial.Replace("\r", "").Replace("\n", "");
 
@@ -154,18 +156,21 @@ namespace wpfGMTraceability.UserControls
                             if (resInsert.statusCode == (int)HttpStatusCode.OK)
                             {
                                 Dispatcher.Invoke(() =>
-                                    AddLog("[API INSERT]",$"[Serie] {serialclean}{Environment.NewLine}[API Response]: INSERT OK{Environment.NewLine}[API Status]: {resInsert.statusCode}", "OK"));
+                                    AddLog("[API INSERT]",serialclean,"INSERT OK",resInsert.statusCode.ToString().Trim(), null, "OK")
+                                );
                             }
                             else
                             {
                                 Dispatcher.Invoke(() =>
-                                    AddLog("[API INSERT]", $"Serie {serialclean}{Environment.NewLine}[API Response]: INSERT FALLÓ{Environment.NewLine}[API Status]:{resInsert.statusCode}", "Error"));
+                                    AddLog("[API INSERT]", serialclean, "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error")
+                                );
                             }
                         }
                         else
                         {
                             Dispatcher.Invoke(() =>
-                                AddLog("[API INSERT]", $"[Serie]: {serialclean} / Esperando PASS del Arduino...", "Error"));
+                                AddLog("[API INSERT]", serialclean,"-","-","Esperando PASS del Arduino...", "Error")
+                            );
                         }
                     }
                     else if (Res == "NO_OK")
@@ -182,14 +187,14 @@ namespace wpfGMTraceability.UserControls
                 else
                 {
                     Dispatcher.Invoke(() =>
-                        AddLog("[SERIAL CHECK]", $@"Error {serial} / NO_RESPONSE{Environment.NewLine} / {result.statusCode}", "SystemError"));
+                        AddLog("[SERIAL CHECK]", serial,"NO_RESPONSE",result.statusCode.ToString().Trim(), null, "SystemError"));
 
                     await writer.WriteAsync("NO_RESPONSE\n");
                 }
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", $@"[Serie Validada]: {serial} / {ex.Message}", "SystemError"));
+                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-",ex.Message, "SystemError"));
             }
             finally
             {
@@ -218,11 +223,14 @@ namespace wpfGMTraceability.UserControls
         #endregion
 
         #region Logging
-        public void AddLog(string titleItem,string mensaje, string tipo, bool persistente = false)
+        public void AddLog(string titleItem, string serial, string apiResponse, string apiStatus, string mensaje, string tipo, bool persistente = false)
         {
             var nuevoLog = new ScanLogItem
             {
                 Title = titleItem,
+                Serial = serial,
+                APIResponse = apiResponse,
+                APIStatus = apiStatus,
                 Msj = mensaje,
                 MsjType = tipo,
                 Timestamp = DateTime.Now,
@@ -231,7 +239,6 @@ namespace wpfGMTraceability.UserControls
 
             logItems.Add(nuevoLog);
             lbLog.ScrollIntoView(nuevoLog);
-
         }
         #endregion
     }
