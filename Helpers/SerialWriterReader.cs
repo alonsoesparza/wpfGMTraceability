@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
@@ -219,6 +220,97 @@ namespace wpfGMTraceability.Helpers
                         catch (TimeoutException)
                         {
                             // no llegó línea en esta ventana: seguimos
+                        }
+                    }
+                }
+            }, ct);
+        }
+        public Task<string> WriteAndWaitForPassOrResetAsync(
+            string mensaje,
+            int? overallTimeoutMs = null,
+            bool caseInsensitive = true,
+            CancellationToken ct = default)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(SerialWriterReader));
+
+            return Task.Run(() =>
+            {
+                if (_serialPort == null || !_serialPort.IsOpen)
+                    return null;
+
+                var sw = Stopwatch.StartNew();
+
+                string Normalize(string s) =>
+                    (s ?? string.Empty)
+                        .Replace("\r", string.Empty)
+                        .Replace("\n", string.Empty)
+                        .Trim();
+
+                string pass = "PASS";
+                string reset = "RESET";
+
+                lock (_gate)
+                {
+                    try { _serialPort.DiscardInBuffer(); } catch { }
+
+                    try
+                    {
+                        _serialPort.WriteLine(mensaje);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+
+                    while (true)
+                    {
+                        if (ct.IsCancellationRequested)
+                            return null;
+
+                        if (overallTimeoutMs.HasValue &&
+                            sw.ElapsedMilliseconds > overallTimeoutMs.Value)
+                            return null;
+
+                        try
+                        {
+                            _serialPort.ReadTimeout = 1000;
+                            string line = _serialPort.ReadLine();
+                            line = Normalize(line);
+
+                            if (string.IsNullOrEmpty(line))
+                                continue;
+
+                            if (caseInsensitive)
+                            {
+                                if (string.Equals(line, pass, StringComparison.OrdinalIgnoreCase))
+                                    return "PASS";
+
+                                if (string.Equals(line, reset, StringComparison.OrdinalIgnoreCase))
+                                    return "RESET";
+                            }
+                            else
+                            {
+                                if (line == pass)
+                                    return "PASS";
+
+                                if (line == reset)
+                                    return "RESET";
+                            }
+
+                            // Si llega algo distinto, seguimos esperando
+                        }
+                        catch (TimeoutException)
+                        {
+                            // silencio en esta ventana → seguir
+                        }
+                        catch (IOException)
+                        {
+                            return null;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            return null;
                         }
                     }
                 }

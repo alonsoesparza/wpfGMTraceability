@@ -17,7 +17,7 @@
                 <Image x:Name="ImgSlide" Stretch="UniformToFill" Visibility="Collapsed"/>
 
                 <!-- Capa de video -->
-                <MediaElement x:Name="VidSlide" Margin="0 0 0 10" LoadedBehavior="Manual" UnloadedBehavior="Stop" Stretch="Uniform" Visibility="Visible"/>
+                <MediaElement x:Name="VidSlide" Margin="0 0 0 10" LoadedBehavior="Manual" UnloadedBehavior="Manual" MediaEnded="VidSlide_MediaEnded" Stretch="Uniform" Visibility="Visible"/>
 
                 <!-- Overlay de fundido -->
                 <Rectangle x:Name="FadeOverlay" Fill="Black" Opacity="0"/>

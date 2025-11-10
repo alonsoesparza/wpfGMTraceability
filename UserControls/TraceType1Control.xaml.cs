@@ -126,28 +126,19 @@ namespace wpfGMTraceability.UserControls
                     {
                         ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
 
-                        bool isPass = await writer.WriteAndWaitForAsync($"{Res}\n", "PASS", overallTimeoutMs: null);
+                        var respuesta = await writer.WriteAndWaitForPassOrResetAsync(
+                            "OK",
+                            overallTimeoutMs: null
+                        );
 
                         HideLoadOverlay?.Invoke(this, EventArgs.Empty);
 
-                        if (isPass)
+                        if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))
                         {
                             var jsonEntry = new
                             {
-                                SerialNumber = serialclean,
-                                State = "OK",
-                                Day = $@"{DateTime.Now:yyyy-MM-dd}",
-                                Hour = DateTime.Now.ToString("HH:mm"),
-                                C1 = "1",
-                                C2 = "2",
-                                C3 = "3",
-                                C4 = "4",
-                                C5 = "5",
-                                C6 = "6",
-                                C7 = "7",
-                                C8 = "8",
-                                C9 = "9",
-                                C10 = "0"
+                                SN = serialclean,
+                                Status = "PASS",
                             };
 
                             string jsonFinal = JsonConvert.SerializeObject(jsonEntry, Formatting.None);
@@ -166,17 +157,24 @@ namespace wpfGMTraceability.UserControls
                                 );
                             }
                         }
+                        else if (string.Equals(respuesta, "RESET", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Dispatcher.Invoke(() =>
+                                AddLog("[PLC RESET]", serialclean, "RESET RECIBIDO", "-", null, "SystemInfo", true)
+                            );
+
+                            RestartApp();
+                        }
                         else
                         {
                             Dispatcher.Invoke(() =>
-                                AddLog("[API INSERT]", serialclean,"-","-","Esperando PASS del Arduino...", "Error")
+                                AddLog("[API INSERT]", serialclean, "-", "-", "Sin respuesta válida (PASS/RESET) desde el equipo", "Error")
                             );
                         }
                     }
                     else if (Res == "NO_OK")
                     {
-                        // NO_OK → no mostrar mensaje adicional
-                        await writer.WriteAsync($"{Res}\n"); // opcional; quítalo si no deseas enviar nada al Arduino
+                        await writer.WriteAsync($"{Res}\n");
                     }
                     else
                     {
@@ -239,6 +237,25 @@ namespace wpfGMTraceability.UserControls
 
             logItems.Add(nuevoLog);
             lbLog.ScrollIntoView(nuevoLog);
+        }
+        #endregion
+
+        #region Utilidades
+        private void RestartApp()
+        {
+            try
+            {
+                var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location
+                              ?? Application.ResourceAssembly.Location;
+
+                System.Diagnostics.Process.Start(exePath);
+                Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al reiniciar la aplicación: {ex.Message}", "Restart Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         #endregion
     }

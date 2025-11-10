@@ -19,6 +19,7 @@ namespace wpfGMTraceability.Views
 {
     public partial class VideoWindow : Window
     {
+        string vidSrc = null;
         public VideoWindow()
         {
             InitializeComponent();
@@ -28,23 +29,33 @@ namespace wpfGMTraceability.Views
         {
             if (File.Exists(SettingsManager.VideoFileName))
             {
-                VidSlide.Source = new Uri(SettingsManager.VideoFileName, UriKind.Absolute);
+                vidSrc = SettingsManager.VideoFileName;
+                VidSlide.Source = new Uri(vidSrc, UriKind.Absolute);
                 VidSlide.Position = TimeSpan.Zero;
-
                 VidSlide.Play();
 
-                VidSlide.MediaFailed += (s, ee) => MessageBox.Show("Error: " + ee.ErrorException.Message);
-            }
-            else
-            {
+                //error
+                VidSlide.MediaFailed += (s, ee) =>
+                    MessageBox.Show("Error: " + ee.ErrorException.Message);
+            }else{
                 MessageBox.Show("Archivo no encontrado:\n" + SettingsManager.VideoFileName);
             }
+
         }
 
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
             try { VidSlide.Stop(); } catch { }
             Close();
+        }
+
+        private void VidSlide_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            VidSlide.Source = null;   // limpiar
+            VidSlide.Source = new Uri(vidSrc, UriKind.Absolute);    // volver a asignar
+            VidSlide.Position = TimeSpan.Zero;
+            VidSlide.Play();
+
         }
     }
 }
