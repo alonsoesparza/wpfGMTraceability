@@ -48,6 +48,7 @@ namespace wpfGMTraceability
             SettingsManager.APIPASSInsertUrl = _config.APIInsert;
             SettingsManager.VideoFileName = _config.VideoURL;
             SettingsManager.TraceType1WindowName = _config.TraceType1WindowName;
+            SettingsManager.APISerialMultiInsertUrl = _config.APISerialMultiInsertUrl;
 
             //*******Load Ports Config********
             RenderPages.Children.Clear();
@@ -59,14 +60,17 @@ namespace wpfGMTraceability
                 switch (SettingsManager.TraceType)
                 {
                     case "Tipo 1":
-                        //Title = "GM Traceability - Tipo 1";
                         myUsrCtrl = new TraceType1Control();
                         this.txtBTitle.Text = SettingsManager.TraceType1WindowName;
                         break;
                     case "Tipo 2":
-                        //Title = "GM Traceability - Tipo 1";
-                        myUsrCtrl = new TraceType2Control();
-                        break;
+                        var ctrlTemp = new TraceType2Control();
+                        ctrlTemp.StationTitle += (valor) =>
+                        {
+                            this.txtBTitle.Text = valor;
+                        };
+                        myUsrCtrl = ctrlTemp;
+                        break;                        
 
                     default:
                         break;
@@ -80,19 +84,7 @@ namespace wpfGMTraceability
                         overlayAware.HideLoadOverlay += (s, ee) => LoadingOverlay.Visibility = Visibility.Collapsed;
                     }
 
-                    //***Abrir un Dialog al iniciar, para introducir el nombre de la ventana padre
-                    //await Dispatcher.InvokeAsync(async () =>
-                    //{
-                    //    var dialog = new TitleChangeDialog();
-                    //    var result = await DialogHost.Show(dialog, "StartupDialog");
-
-                    //    if (result is string windowName && !string.IsNullOrWhiteSpace(windowName))
-                    //    {
-                    //        txtBTitle.Text = $"ESTACIÓN - {windowName.ToUpper()}";
-                    //        RenderPages.Children.Clear();
-                            RenderPages.Children.Add(myUsrCtrl);
-                    //    }
-                    //}, DispatcherPriority.Loaded);
+                    RenderPages.Children.Add(myUsrCtrl);
                 }
             }
             catch (System.IO.IOException exIO)
@@ -119,8 +111,7 @@ namespace wpfGMTraceability
         public void MostrarOverlay(bool mostrar)
         {
             OverlayOscuro.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
-        }
-      
+        }  
         #endregion
         private void Main_Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

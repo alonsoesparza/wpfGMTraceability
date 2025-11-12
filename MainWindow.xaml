@@ -23,7 +23,7 @@
                             <Grid Grid.Column="0" Grid.ColumnSpan="2" Margin="0 0 0 0">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock FontWeight="ExtraBold" FontSize="14" Text="&#xF06C;" FontFamily="wingdings" VerticalAlignment="Center" Foreground="Green" />
-                                    <TextBlock x:Name="txtBTitle" Text="ESTACION" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="30" Margin="5 0 10 0" />
+                                    <TextBlock x:Name="txtBTitle" Text=".." TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="30" Margin="5 0 10 0" />
                                 </StackPanel>
                             </Grid>
                             <Grid Grid.Column="1" Margin="0 0 10 0">

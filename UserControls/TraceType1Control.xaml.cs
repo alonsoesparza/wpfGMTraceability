@@ -48,7 +48,6 @@ namespace wpfGMTraceability.UserControls
         private void TraceType1_Control_Loaded(object sender, RoutedEventArgs e)
         {
             lbLog.ItemsSource = logItems;
-
             cleanTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(60)
@@ -125,12 +124,10 @@ namespace wpfGMTraceability.UserControls
                     if (Res == "OK")
                     {
                         ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
-
                         var respuesta = await writer.WriteAndWaitForPassOrResetAsync(
                             "OK",
                             overallTimeoutMs: null
                         );
-
                         HideLoadOverlay?.Invoke(this, EventArgs.Empty);
 
                         if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))

@@ -78,7 +78,8 @@ namespace wpfGMTraceability.Views
                 TraceType = valTypeTrace.ToString(),
                 VideoURL = (sTargetVideoPath == null) ? @"C:\" : sTargetVideoPath.Trim().ToString(),
                 APIInsert = (txtApiInsert.Text == null) ? @"C:\" : txtApiInsert.Text.Trim().ToString(),
-                TraceType1WindowName = (String.IsNullOrWhiteSpace(txtWindowName.Text)) ? "NONAME" : txtWindowName.Text.Trim().ToString()
+                TraceType1WindowName = (String.IsNullOrWhiteSpace(txtWindowName.Text)) ? "NONAME" : txtWindowName.Text.Trim().ToString(),
+                APISerialMultiInsertUrl = (txtAPIMultiInsert.Text == null) ? "http://localhost/" : txtAPIMultiInsert.Text.Trim().ToString()
             };
 
             var jsonSettings = JsonConvert.SerializeObject(configSettings, Formatting.Indented);
@@ -138,7 +139,7 @@ namespace wpfGMTraceability.Views
                 txtVideoPath.Text = _config.VideoURL;
                 txtApiInsert.Text = _config.APIInsert;
                 txtWindowName.Text = _config.TraceType1WindowName;
-                
+                txtAPIMultiInsert.Text = _config.APISerialMultiInsertUrl;                
 
                 SerialPortConfig _configPorts;
                 var jsonPorts = System.IO.File.ReadAllText(SettingsManager.ConfigPortsFilePath);
@@ -149,7 +150,8 @@ namespace wpfGMTraceability.Views
                 var jsonWritePort = System.IO.File.ReadAllText(SettingsManager.ConfigWritePortsFilePath);
                 _configWritePort = JsonConvert.DeserializeObject<SerialPortConfig>(jsonWritePort);
                 cbOutPort.SelectedItem = _configWritePort.Port;
-              
+
+                TabVisibilityCheck();
             }
             catch (Exception)
             {
@@ -199,19 +201,38 @@ namespace wpfGMTraceability.Views
 
             }
         }
-
         private void cbTraceType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            MainTab.SelectedIndex = 0;
             if (cbTraceType.SelectedItem is ComboBoxItem item && item.Content.ToString() == "Tipo 1")
             {
-                txbTitleWindowName.Visibility = Visibility.Visible;
-                txtWindowName.Visibility= Visibility.Visible;
+                stkTitleWindowName.Visibility = Visibility.Visible;
             }
             else
             {
-                txbTitleWindowName.Visibility = Visibility.Hidden;
-                txtWindowName.Visibility = Visibility.Hidden;
-                //txtWindowName.Clear();
+                stkTitleWindowName.Visibility = Visibility.Hidden;
+            }
+            TabVisibilityCheck();
+        }
+        private void TabVisibilityCheck()
+        {
+            if (cbTraceType.SelectedItem is ComboBoxItem item && item.Content.ToString() == "Tipo 1")
+            {
+                tabType1.Visibility = Visibility.Visible;
+                tabType2.Visibility = Visibility.Collapsed;
+                tabType3.Visibility = Visibility.Collapsed;
+            }
+            else if(cbTraceType.SelectedItem is ComboBoxItem item2 && item2.Content.ToString() == "Tipo 2")
+            {
+                tabType1.Visibility = Visibility.Collapsed;
+                tabType2.Visibility = Visibility.Visible;
+                tabType3.Visibility = Visibility.Collapsed;
+            }
+            else if (cbTraceType.SelectedItem is ComboBoxItem item3 && item3.Content.ToString() == "Tipo 3")
+            {
+                tabType1.Visibility = Visibility.Collapsed;
+                tabType2.Visibility = Visibility.Collapsed;
+                tabType3.Visibility = Visibility.Collapsed;
             }
         }
     }

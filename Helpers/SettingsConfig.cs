@@ -16,5 +16,6 @@ namespace wpfGMTraceability.Helpers
         public string VideoURL { get; set; }
         public string APIInsert { get; set; }
         public string TraceType1WindowName { get; set; }
+        public string APISerialMultiInsertUrl { get; set; }
     }
 }

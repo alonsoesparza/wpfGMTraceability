@@ -14,96 +14,193 @@
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="2" />
             <RowDefinition Height="80" />
-            <RowDefinition Height="75" />
-            <RowDefinition Height="25" />
-            <RowDefinition Height="80" />
+            <RowDefinition Height="45" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="80" />
             <RowDefinition Height="80" />
             <RowDefinition Height="80" />
             <RowDefinition Height="80" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5">
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5">
             <!-- **** PartNumber Harness + LeadCode + JulianDay **** -->
-            <materialDesign:Card x:Name="cardPNLeadJulianDay"  materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" BorderThickness="2" Margin="18 5 5 5" BorderBrush="Navy" 
+            <materialDesign:Card x:Name="cardPNLeadJulianDay"  materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" BorderThickness="2" Margin="10 5 5 5" BorderBrush="Navy" 
                      Width="auto" Height="auto" Background="Blue">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Width="32" Height="32" Kind="CarShiftPattern" Foreground="Gray" VerticalAlignment="Center" />
                     <TextBlock x:Name="txtScanCode" FontWeight="SemiBold" FontSize="40" Foreground="White" Text="" Margin="2 0 0 0" />
                 </StackPanel>
             </materialDesign:Card>
+            <!-- **** PartNumber Harness + LeadCode + JulianDay **** -->
+            <materialDesign:Card x:Name="cardCompCount"  materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" BorderThickness="2" Margin="18 5 5 5" BorderBrush="Navy" 
+         Width="auto" Height="auto" Background="Blue">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Counter" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtCompCount" FontWeight="SemiBold" FontSize="40" Foreground="White" Text="" Margin="2 0 0 0" />
+                </StackPanel>
+            </materialDesign:Card>
         </StackPanel>
 
-        <TextBlock x:Name="txtLastScan" Text="..." Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3" FontSize="18" Foreground="Gray" VerticalAlignment="Center" FontWeight="Normal" Margin="18 0" />
+        <!-- Last Scan Label-->
+        <TextBlock x:Name="txtLastScan" Text="..." Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" FontSize="18" Foreground="Gray" VerticalAlignment="Top" FontWeight="Normal" Margin="15 0" />
+
+        <!-- **** Cards de escaneos *** -->
+        <!-- Primera linea -->
+        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="6" Margin="0 2 0 2">
+            <materialDesign:Card x:Name="crdComp1" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+                     BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number1Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp1" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+            <materialDesign:Card x:Name="crdComp2" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+         BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number2Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp2" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+            <materialDesign:Card x:Name="crdComp3" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+         BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number3Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp3" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+            <materialDesign:Card x:Name="crdComp4" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+         BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number4Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp4" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+            <materialDesign:Card x:Name="crdComp5" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+         BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number5Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp5" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+        </StackPanel>
+        <!-- Segunda Linea -->
+        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="5" Margin="0 2 0 2">
+            <materialDesign:Card x:Name="crdComp6" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+             BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number6Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp6" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+            <materialDesign:Card x:Name="crdComp7" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+ BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number7Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp7" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+            <materialDesign:Card x:Name="crdComp8" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+ BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number8Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp8" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+            <materialDesign:Card x:Name="crdComp9" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+ BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number9Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp9" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+            <materialDesign:Card x:Name="crdComp10" materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
+ BorderThickness="2" Margin="10 0 0 0" BorderBrush="Gray" Width="auto" Height="auto" Background="WhiteSmoke" Visibility="Hidden">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number1Box" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 -16 0" />
+                    <materialDesign:PackIcon Width="32" Height="32" Kind="Number0Box" Foreground="Gray" VerticalAlignment="Center" />
+                    <TextBlock x:Name="txtComp10" FontWeight="SemiBold" FontSize="14" Text="CONSTRUCCION-142938905A1-2530922-03-0040707-T" Foreground="Gray" VerticalAlignment="Center" Margin="0 0 5 0" MaxWidth="180" TextWrapping="Wrap"/>
+                </StackPanel>
+            </materialDesign:Card>
+        </StackPanel>
 
         <!-- **** Video Button **** -->
-        <Button x:Name="BtnPlayVideo" Style="{StaticResource MaterialDesignFloatingActionButton}" Height="75" Width="75" BorderBrush="{x:Null}" Background="Gray" Grid.Column="4" Grid.Row="2" Margin="0 0 25 0" Foreground="White" 
-HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click">
+        <Button x:Name="BtnPlayVideo" Style="{StaticResource MaterialDesignFloatingActionButton}" Height="75" Width="75" BorderBrush="{x:Null}" Background="Gray" Grid.Column="5" Grid.Row="1" Grid.RowSpan="2" Margin="0 0 25 0" Foreground="White" 
+HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="BtnPlayVideo_Click">
             <StackPanel Orientation="Vertical">
                 <materialDesign:PackIcon Kind="Play" Width="46" Height="46" Foreground="LimeGreen" HorizontalAlignment="Center"/>
                 <TextBlock FontWeight="SemiBold" FontSize="16" Text="Video" Margin="0 -5 0 0"/>
             </StackPanel>
         </Button>
 
-        <materialDesign:Card Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4" Padding="4" Margin="10" UniformCornerRadius="6">
-            <DataGrid x:Name="dgParts" AutoGenerateColumns="False" ItemsSource="{Binding}" IsReadOnly="True" FontSize="14" FontFamily="Segoe UI" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                        RowHeaderWidth="0" HeadersVisibility="Column" GridLinesVisibility="All" materialDesign:DataGridAssist.CellPadding="8" materialDesign:DataGridAssist.ColumnHeaderPadding="12"
-                        RowDetailsVisibilityMode="VisibleWhenSelected" SelectionMode="Single" Background="Transparent" MouseLeftButtonUp="dgParts_MouseLeftButtonUp">
-                <DataGrid.Resources>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="#FF007ACC" />
-                        <Setter Property="Foreground" Value="White" />
-                        <Setter Property="FontWeight" Value="Bold" />
-                        <Setter Property="BorderBrush" Value="DarkGray" />
-                        <Setter Property="BorderThickness" Value="0,0,1,0" />
-                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                        <Setter Property="Height" Value="32" />
-                        <Setter Property="Padding" Value="8" />
-                    </Style>
-                </DataGrid.Resources>
-                <DataGrid.RowDetailsTemplate>
-                    <DataTemplate>
-                        <Border Background="#F5F5F5" Padding="8" Margin="4">
-                            <ItemsControl ItemsSource="{Binding Boxes}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Margin="4" Background="Aqua">
-                                            <TextBlock Text="{Binding BoxNumber}" FontWeight="Bold" Margin="4"/>
-                                            <TextBlock Text="{Binding BoxQt}" Margin="4"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Border>
-                    </DataTemplate>
-                </DataGrid.RowDetailsTemplate>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Parte" Binding="{Binding BomPart}" />
-                    <DataGridTextColumn Header="Cantidad por pieza" Binding="{Binding bom_quantity_per_piece}" />
-                    <DataGridTextColumn Header="Disponible" Binding="{Binding total_available}" />
-                    <DataGridCheckBoxColumn Header="Suficiente" Binding="{Binding Sufficient}" />
-                </DataGrid.Columns>
-            </DataGrid>
+        <!--Log de Actividad-->
+        <materialDesign:Card Margin="10 10 10 10" Grid.ColumnSpan="4" Grid.Row="5" Grid.RowSpan="6" Grid.Column="0" Padding="0" materialDesign:ElevationAssist.Elevation="Dp8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Background="Gray" Grid.Row="0" Padding="5" BorderThickness="1" BorderBrush="Black">
+                    <TextBlock Text="Log Actividad" Foreground="White" FontWeight="Bold" FontSize="26" VerticalAlignment="Center"/>
+                </Border>
+
+                <ListBox x:Name="lbLog" VerticalAlignment="Bottom" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Stretch" Grid.Row="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel Margin="0" LastChildFill="True" HorizontalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Height="60" Width="60" Margin="0" />
+                                <Border Padding="2" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
+                                    <TextBlock Text="{Binding Formatted}" Foreground="WhiteSmoke" FontSize="24" />
+                                </Border>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </materialDesign:Card>
+        
+        <!--DataGrid-->
+        <materialDesign:Card Margin="10 10 10 10" Grid.Column="4" Grid.ColumnSpan="2" Grid.Row="5" Grid.RowSpan="5" Padding="0" materialDesign:ElevationAssist.Elevation="Dp8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Background="Gray" Grid.Row="0" Padding="5" BorderThickness="1" BorderBrush="Black">
+                    <TextBlock Text="BOM" Foreground="White" FontWeight="Bold" FontSize="26" VerticalAlignment="Center"/>
+                </Border>
+
+                <Border CornerRadius="12" Padding="5" Grid.Row="1">
+                    <DataGrid x:Name="dgBOM" AutoGenerateColumns="False" SelectionMode="Single" IsReadOnly="True">
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                <Setter Property="Background" Value="#6002ee"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Material" Binding="{Binding BomPart}" />
+                            <DataGridTextColumn Header="Cant. por Pieza" Binding="{Binding bom_quantity_per_piece}" />
+                            <DataGridTextColumn Header="Disponible" Binding="{Binding total_available}" />
+                            <DataGridCheckBoxColumn Header="Suficiente" Binding="{Binding Sufficient}" />
+                            <DataGridTextColumn Header="Disponible" Binding="{Binding total_available}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>                
+            </Grid>
         </materialDesign:Card>
 
-        <ListBox x:Name="lbLog" Grid.ColumnSpan="2" Grid.Row="7" Grid.Column="0" MaxHeight="300" VerticalAlignment="Bottom" ScrollViewer.VerticalScrollBarVisibility="Auto" BorderThickness="0">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <DockPanel Margin="2" LastChildFill="True">
-                        <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Width="20" Height="20" Margin="0,0,6,0" />
-                        <Border Padding="6" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
-                            <TextBlock Text="{Binding Formatted}" Foreground="White" FontSize="12" />
-                        </Border>
-                    </DockPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <Image Grid.Row="9" Grid.Column="4" Margin="0 0 10 0" Source="/Resources/LogoWithName.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        <!--Logo-->
+        <Image Grid.Row="10" Grid.Column="4" Grid.ColumnSpan="2" Margin="0 0 10 0" Width="250" Source="/Resources/LogoWithName.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
 
     </Grid>
 </UserControl>

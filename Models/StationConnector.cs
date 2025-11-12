@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace wpfGMTraceability.Models
     {
         public string Station { get; set; }
         public List<Part> Parts { get; set; }
+        public int Comp {  get; set; }
     }
     public class Part
     {

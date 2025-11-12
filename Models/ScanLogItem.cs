@@ -21,7 +21,8 @@ namespace wpfGMTraceability.Models
             get
             {
                 var exMsj = !string.IsNullOrWhiteSpace(Msj) ? Environment.NewLine + Msj : "";
-                return $"{Title}{Environment.NewLine}[Hora]: {Timestamp:HH:mm:ss}      [API Response]: {APIResponse}      [API Status]: {APIStatus}{Environment.NewLine}[Serial]: {Serial}{exMsj}";
+                var exSerial = !string.IsNullOrWhiteSpace(Serial) ? $@"[Serial]: {Serial}" + Msj : "";
+                return $"{Title}{Environment.NewLine}[Hora]: {Timestamp:HH:mm:ss}      [API Response]: {APIResponse}      [API Status]: {APIStatus}{Environment.NewLine}{exSerial}{exMsj}";
             }
         }            
     }

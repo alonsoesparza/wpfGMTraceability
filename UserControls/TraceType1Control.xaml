@@ -95,7 +95,7 @@ HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click
                 </ListBox>
             </Grid>
         </materialDesign:Card>
-        <Image Grid.Row="7" Grid.Column="4" Margin="0 0 10 0" Source="/Resources/LogoWithName.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        <Image Grid.Row="7" Grid.Column="4" Margin="0 0 10 0" Width="250" Source="/Resources/LogoWithName.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
 
     </Grid>
 </UserControl>

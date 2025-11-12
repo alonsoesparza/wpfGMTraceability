@@ -45,7 +45,7 @@ namespace wpfGMTraceability.Helpers
             catch (HttpRequestException ex)
             {
                 // Puedes loggear el error aquí si tienes un panel de errores
-                return (null, statusCode);
+                return (ex.InnerException.ToString(), statusCode);
             }
         }
         public static async Task<(string content, int statusCode)> PostAPIConsumeAsync(string Json)
@@ -103,6 +103,30 @@ namespace wpfGMTraceability.Helpers
 
                 //
                 HttpResponseMessage response = await client.PostAsync(SettingsManager.APIPASSInsertUrl, content);
+                string responseContent = await response.Content.ReadAsStringAsync();
+
+                statusCode = (int)response.StatusCode;
+                if (response.IsSuccessStatusCode)
+                {
+                    string respuesta = await response.Content.ReadAsStringAsync();
+                    return (respuesta, statusCode);
+                }
+                else
+                {
+                    var json = JObject.Parse(responseContent);
+                    return (json["detail"]?.ToString(), statusCode);
+                }
+            }
+        }
+        public static async Task<(string content, int statusCode)> PostAPISerialMultiInsert(string Json)
+        {
+            int statusCode = -1;
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(Json, Encoding.UTF8, "application/json");
+
+                //
+                HttpResponseMessage response = await client.PostAsync(SettingsManager.APISerialMultiInsertUrl, content);
                 string responseContent = await response.Content.ReadAsStringAsync();
 
                 statusCode = (int)response.StatusCode;
