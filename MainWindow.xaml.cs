@@ -56,7 +56,6 @@ namespace wpfGMTraceability
             try
             {
                 UserControl myUsrCtrl = null;
-
                 switch (SettingsManager.TraceType)
                 {
                     case "Tipo 1":
@@ -70,7 +69,15 @@ namespace wpfGMTraceability
                             this.txtBTitle.Text = valor;
                         };
                         myUsrCtrl = ctrlTemp;
-                        break;                        
+                        break;
+                    case "Tipo 3":
+                        var ctrlTemp2 = new TraceType3Control();
+                        ctrlTemp2.StationTitle += (valor) =>
+                        {
+                            this.txtBTitle.Text = valor;
+                        };
+                        myUsrCtrl = ctrlTemp2;
+                        break;
 
                     default:
                         break;

@@ -1,19 +1,22 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO.Ports;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media.Media3D;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using wpfGMTraceability.Helpers;
 using wpfGMTraceability.Managers;
@@ -23,9 +26,9 @@ using wpfGMTraceability.Views;
 namespace wpfGMTraceability.UserControls
 {
     /// <summary>
-    /// Interaction logic for TraceType2Control.xaml
+    /// Interaction logic for TraceType3Control.xaml
     /// </summary>
-    public partial class TraceType2Control : UserControl, IOverlayAware
+    public partial class TraceType3Control : UserControl
     {
         #region Inicialización y carga
         private SerialWriterReader writer;
@@ -42,7 +45,7 @@ namespace wpfGMTraceability.UserControls
         private int Comp = 0;
         string sLastData = "";
         private bool reloadInit = false;
-        public TraceType2Control()
+        public TraceType3Control()
         {
             InitializeComponent();
 
@@ -61,7 +64,7 @@ namespace wpfGMTraceability.UserControls
             writer = new SerialWriterReader(_Wconfig.Port, _Wconfig.BaudRate);
             writer.OpenPort();
         }
-        private void TraceType2_Control_Loaded(object sender, RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             cleanTimer = new DispatcherTimer
             {
@@ -78,8 +81,8 @@ namespace wpfGMTraceability.UserControls
             lbLog.ItemsSource = logItems;
             _ = LoadBOMDataAsync();
         }
-        #endregion      
-        
+        #endregion
+
         #region Eventos del sistema
         private void BtnPlayVideo_Click(object sender, RoutedEventArgs e)
         {
@@ -93,7 +96,7 @@ namespace wpfGMTraceability.UserControls
             ventana?.MostrarOverlay(false);
         }
         #endregion
-        
+
         #region Eventos de comunicación
         private void OnSerialData(object sender, string data)
         {
@@ -108,7 +111,7 @@ namespace wpfGMTraceability.UserControls
             DoProcess(data);
         }
         #endregion
-        
+
         #region Funciones de negocio / lógica principal
         private async void DoProcess(string serial)
         {
@@ -198,13 +201,13 @@ namespace wpfGMTraceability.UserControls
                     else
                     {
                         //***Si Dynalab no manda señal ** validar
-                    }                    
+                    }
                 }
             }
             catch (Exception Ex)
             {
                 Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-", Ex.Message, "SystemError"));
-            }            
+            }
         }
         private async Task<byte> CheckSerialNumberAsync(string serial)
         {
@@ -263,25 +266,7 @@ namespace wpfGMTraceability.UserControls
                 return (byte)0;
             }
         }
-    
-        
-
-
-
-        private List<object> CheckForSufficientStock()
-        {
-            var SufficientParts = BOMInventoryData.Parts
-                .Where(p => !p.Sufficient)
-                .Select(p => new
-                {
-                    p.BomPart,
-                    p.bom_quantity_per_piece,
-                    p.total_available
-                });
-
-            return SufficientParts.Cast<object>().ToList();
-        }
-        private async Task LoadBOMDataAsync()
+        public async Task LoadBOMDataAsync()
         {
             BOMInventoryData = await ApiCalls.GetStationDataAsync();
             try
@@ -295,102 +280,10 @@ namespace wpfGMTraceability.UserControls
                 MessageBox.Show(ex.Message);
             }
         }
-        private void ProcessSerialNumber(string serial)
-        {
-
-
-            //var InsufficientParts = CheckForSufficientStock();
-            //if (InsufficientParts.Count > 0)
-            //{
-            //    try
-            //    {
-            //        _session.ReleaseOwner(this);
-            //        var modal = new RequestBoxWindow(_session, InsufficientParts, BOMInventoryData, serial);
-            //        modal.ShowDialog();
-            //        _session.AssignOwner(this, OnSerialData);
-            _ = LoadBOMDataAsync();
-
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.Write(ex.Message);
-            //    }
-            //    return;
-            //}
-            //else
-            //{
-            //    DoConsume(serial);
-            //}
-        }
-        private async void DoConsume(string serial)
-        {
-            ////** Cajas Ordenadas para recorrerlas en orden
-            //var orderedBoxesByPart = BOMInventoryData.Parts
-            //                        .Where(p => p.Boxes != null && p.Boxes.Count > 0)
-            //                        .Select(p => new
-            //                        {
-            //                            BomPart = p.BomPart,
-            //                            BomQty = p.bom_quantity_per_piece,
-            //                            Boxes = p.Boxes.OrderBy(b => b.BoxNumber).ToList()
-            //                        })
-            //                        .ToList();
-
-            ////** Crear la lista de consumo
-            //var consumptionItems = new List<object>();
-            //foreach (var part in orderedBoxesByPart)
-            //{
-            //    int remainingQty = part.BomQty;
-
-            //    foreach (var box in part.Boxes)
-            //    {
-            //        if (remainingQty <= 0)
-            //            break;
-
-            //        int qtyToTake = Math.Min(box.BoxQt, remainingQty);
-
-            //        consumptionItems.Add(new
-            //        {
-            //            boxnumber = box.BoxNumber,
-            //            serialtestnumber = serial,
-            //            qty = qtyToTake
-            //        });
-
-            //        remainingQty -= qtyToTake;
-            //    }
-            //}
-
-            //var finalJson = new
-            //{
-            //    station_name = BOMInventoryData.Station,
-            //    items = consumptionItems
-            //};
-
-            //string jsonFinal = JsonConvert.SerializeObject(finalJson, Formatting.Indented);
-
-            //ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
-            //var result = await ApiCalls.PostAPIConsumeAsync(jsonFinal);
-            //HideLoadOverlay?.Invoke(this, EventArgs.Empty);
-
-            //string ResContent = result.content;
-            //int StatusCode = result.statusCode;
-
-            //string StatusMessage = HttpStatusHelper.GetStatusMessage(StatusCode);
-
-            //if (ResContent != null)
-            //{
-            //    Dispatcher.Invoke(() => AddLog($"{serial} / {ResContent} / {StatusMessage}", "OK"));
-            //    _ = LoadBOMDataAsync();
-            //}
-            //else
-            //{
-            //    //**** Mensaje de error, API no responde
-            //    Dispatcher.Invoke(() => AddLog($"{serial} / {ResContent} / {StatusMessage}", "ERROR"));
-            //}
-        }
         #endregion
 
         #region Liberación de recursos
-        private void TraceType2_Control_Unloaded(object sender, RoutedEventArgs e)
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             _session.Dispose();
             writer.ClosePort();

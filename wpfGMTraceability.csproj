@@ -190,6 +190,9 @@
     <Compile Include="UserControls\TraceType2Control.xaml.cs">
       <DependentUpon>TraceType2Control.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\TraceType3Control.xaml.cs">
+      <DependentUpon>TraceType3Control.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
@@ -227,6 +230,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\TraceType2Control.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\TraceType3Control.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
