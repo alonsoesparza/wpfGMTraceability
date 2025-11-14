@@ -205,6 +205,9 @@
     <Compile Include="Views\RequestBoxWindow.xaml.cs">
       <DependentUpon>RequestBoxWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TraceType3LabelScanWindow.xaml.cs">
+      <DependentUpon>TraceType3LabelScanWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VideoWindow.xaml.cs">
       <DependentUpon>VideoWindow.xaml</DependentUpon>
     </Compile>
@@ -250,6 +253,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RequestBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TraceType3LabelScanWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

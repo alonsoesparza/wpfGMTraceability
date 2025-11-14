@@ -231,7 +231,7 @@ namespace wpfGMTraceability.Views
             else if (cbTraceType.SelectedItem is ComboBoxItem item3 && item3.Content.ToString() == "Tipo 3")
             {
                 tabType1.Visibility = Visibility.Collapsed;
-                tabType2.Visibility = Visibility.Collapsed;
+                tabType2.Visibility = Visibility.Visible;
                 tabType3.Visibility = Visibility.Collapsed;
             }
         }

@@ -133,7 +133,6 @@ namespace wpfGMTraceability.UserControls
                     }
                     else
                     {
-                        //txtScanCode.Text = "";
                         if (CompCount == 0) { txtCompCount.Text = ""; }
                         HideLoadOverlay?.Invoke(this, EventArgs.Empty);
                         reloadInit = true;
@@ -149,59 +148,68 @@ namespace wpfGMTraceability.UserControls
 
                 if (CompCount == Comp)
                 {
-                    ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
-                    var respuesta = await writer.WriteAndWaitForPassOrResetAsync(
-                        "OK",
-                        overallTimeoutMs: null
-                    );
-                    HideLoadOverlay?.Invoke(this, EventArgs.Empty);
 
-                    if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))
+                    var ventana = Window.GetWindow(this) as MainWindow;
+                    ventana?.MostrarOverlay(true);
+
+                    _session.ReleaseOwner(this);
+                    var modal = new TraceType3LabelScanWindow(_session);
+                    modal.Owner = Window.GetWindow(this);
+                    bool? resultado = modal.ShowDialog();
+
+                    _session.AssignOwner(this, OnSerialData);
+                    if (resultado == true)
                     {
-                        //***Hacer el insert
-                        var dict = new Dictionary<string, object>();
-                        string idx = "";
-                        for (int i = 1; i <= 10; i++)
+                        //**Valor retornado, habria qeu validarlo en la ventana del escaneo de la etiqueta
+                        string valor = modal.LabelScanCode;
+                        //**Agregar el valor escaneado de la etiqueta a la lista de insercion
+                        scanList.Add(valor);
+                        var respuesta = await writer.WriteAndWaitForPassOrResetAsync(
+                            "OK",
+                            overallTimeoutMs: null
+                        );
+
+                        if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))
                         {
-                            if (i == 1) { idx = ""; } else { idx = i.ToString(); }
-                            dict[$"SN{idx}"] = scanList.ElementAtOrDefault(i - 1);
+                            //***Hacer el insert
+                            var dict = new Dictionary<string, object>();
+                            string idx = "";
+                            for (int i = 1; i <= 10; i++)
+                            {
+                                if (i == 1) { idx = ""; } else { idx = i.ToString(); }
+                                dict[$"SN{idx}"] = scanList.ElementAtOrDefault(i - 1);
+                            }
+                            dict["Status"] = "PASS";
+
+                            string jsonFinal = JsonConvert.SerializeObject(dict, Formatting.None);
+                            var resInsert = await ApiCalls.PostAPISerialMultiInsert(jsonFinal);
+
+                            if (resInsert.statusCode == (int)HttpStatusCode.OK)
+                            {
+                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "MULTI INSERT OK", resInsert.statusCode.ToString().Trim(), null, "OK") );
+                            }
+                            else
+                            {
+                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error") );
+                            }
+                            scanList.Clear();
+                            txtScanCode.Text = "";
+                            txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}"; ;
+                            txtCompCount.Text = "";
+                            CompCount = 0;
+                            HideLoadOverlay?.Invoke(this, EventArgs.Empty);
                         }
-                        dict["Status"] = "PASS";
-
-                        string jsonFinal = JsonConvert.SerializeObject(dict, Formatting.None);
-                        var resInsert = await ApiCalls.PostAPISerialMultiInsert(jsonFinal);
-
-                        if (resInsert.statusCode == (int)HttpStatusCode.OK)
+                        else if (string.Equals(respuesta, "RESET", StringComparison.OrdinalIgnoreCase))
                         {
-                            Dispatcher.Invoke(() =>
-                                AddLog("[API INSERT]", "", "MULTI INSERT OK", resInsert.statusCode.ToString().Trim(), null, "OK")
-                            );
+                            Dispatcher.Invoke(() => AddLog("[PLC RESET]", serial, "RESET RECIBIDO", "-", null, "SystemInfo", true) );
+                            RestartApp();
                         }
                         else
                         {
-                            Dispatcher.Invoke(() =>
-                                AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error")
-                            );
+                            //***Si Dynalab no manda señal ** validar
                         }
-                        scanList.Clear();
-                        txtScanCode.Text = "";
-                        txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}"; ;
-                        txtCompCount.Text = "";
-                        CompCount = 0;
-                        HideLoadOverlay?.Invoke(this, EventArgs.Empty);
                     }
-                    else if (string.Equals(respuesta, "RESET", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Dispatcher.Invoke(() =>
-                            AddLog("[PLC RESET]", serial, "RESET RECIBIDO", "-", null, "SystemInfo", true)
-                        );
-
-                        RestartApp();
-                    }
-                    else
-                    {
-                        //***Si Dynalab no manda señal ** validar
-                    }
+                    ventana?.MostrarOverlay(false);
                 }
             }
             catch (Exception Ex)

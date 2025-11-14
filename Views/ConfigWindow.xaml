@@ -146,7 +146,7 @@
                                         </StackPanel>
                                     </TabItem>
 
-                                    <TabItem x:Name="tabType2" Header="🔗 Trac. Tipo 2" Visibility="Collapsed">
+                                    <TabItem x:Name="tabType2" Header="🔗 Trac. Tipo 2 / Tipo 3" Visibility="Collapsed">
                                         <StackPanel Margin="0">
                                             <Grid>
                                                 <Grid.RowDefinitions>
