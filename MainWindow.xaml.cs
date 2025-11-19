@@ -49,6 +49,14 @@ namespace wpfGMTraceability
             SettingsManager.VideoFileName = _config.VideoURL;
             SettingsManager.TraceType1WindowName = _config.TraceType1WindowName;
             SettingsManager.APISerialMultiInsertUrl = _config.APISerialMultiInsertUrl;
+            SettingsManager.InventoryConsumptionActive = _config.InventoryConsumptionActive;
+
+            //*******Validar APIs**********
+            MostrarOverlay(true);
+            var modal = new APICheckWindow();
+            modal.Owner = Window.GetWindow(this);
+            bool? resultado = modal.ShowDialog();
+            MostrarOverlay(false);
 
             //*******Load Ports Config********
             RenderPages.Children.Clear();
@@ -56,6 +64,7 @@ namespace wpfGMTraceability
             try
             {
                 UserControl myUsrCtrl = null;
+                this.txtBTraceType.Text = $"Trace: {SettingsManager.TraceType}";
                 switch (SettingsManager.TraceType)
                 {
                     case "Tipo 1":
@@ -115,9 +124,15 @@ namespace wpfGMTraceability
 
             ventana?.MostrarOverlay(false);
         }
-        public void MostrarOverlay(bool mostrar)
+        public void MostrarOverlay(bool mostrar, bool showLoadingIcon = false)
         {
-            OverlayOscuro.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
+            if (showLoadingIcon) {
+                LoadingOverlay.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else
+            {
+                OverlayOscuro.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
+            }                
         }  
         #endregion
         private void Main_Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

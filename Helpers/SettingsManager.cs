@@ -22,5 +22,6 @@ namespace wpfGMTraceability.Helpers
         public static string APIPASSInsertUrl { get; set; }
         public static string TraceType { get; set; }
         public static string APISerialMultiInsertUrl { get; set; }
+        public static bool InventoryConsumptionActive { get; set; }
     }
 }

@@ -17,5 +17,6 @@ namespace wpfGMTraceability.Helpers
         public string APIInsert { get; set; }
         public string TraceType1WindowName { get; set; }
         public string APISerialMultiInsertUrl { get; set; }
+        public bool InventoryConsumptionActive { get; set; }
     }
 }

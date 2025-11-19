@@ -148,7 +148,6 @@ namespace wpfGMTraceability.UserControls
 
                 if (CompCount == Comp)
                 {
-
                     var ventana = Window.GetWindow(this) as MainWindow;
                     ventana?.MostrarOverlay(true);
 
@@ -162,12 +161,7 @@ namespace wpfGMTraceability.UserControls
                     {
                         //**Valor retornado, habria qeu validarlo en la ventana del escaneo de la etiqueta
                         string valor = modal.LabelScanCode;
-                        //**Agregar el valor escaneado de la etiqueta a la lista de insercion
-                        scanList.Add(valor);
-                        var respuesta = await writer.WriteAndWaitForPassOrResetAsync(
-                            "OK",
-                            overallTimeoutMs: null
-                        );
+                        var respuesta = await writer.WriteAndWaitForPassOrResetAsync("OK", overallTimeoutMs: null);
 
                         if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))
                         {
@@ -179,6 +173,7 @@ namespace wpfGMTraceability.UserControls
                                 if (i == 1) { idx = ""; } else { idx = i.ToString(); }
                                 dict[$"SN{idx}"] = scanList.ElementAtOrDefault(i - 1);
                             }
+                            dict["SN10"] = valor;
                             dict["Status"] = "PASS";
 
                             string jsonFinal = JsonConvert.SerializeObject(dict, Formatting.None);
@@ -288,6 +283,7 @@ namespace wpfGMTraceability.UserControls
                 MessageBox.Show(ex.Message);
             }
         }
+        
         #endregion
 
         #region Liberación de recursos

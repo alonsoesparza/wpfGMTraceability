@@ -79,7 +79,8 @@ namespace wpfGMTraceability.Views
                 VideoURL = (sTargetVideoPath == null) ? @"C:\" : sTargetVideoPath.Trim().ToString(),
                 APIInsert = (txtApiInsert.Text == null) ? @"C:\" : txtApiInsert.Text.Trim().ToString(),
                 TraceType1WindowName = (String.IsNullOrWhiteSpace(txtWindowName.Text)) ? "NONAME" : txtWindowName.Text.Trim().ToString(),
-                APISerialMultiInsertUrl = (txtAPIMultiInsert.Text == null) ? "http://localhost/" : txtAPIMultiInsert.Text.Trim().ToString()
+                APISerialMultiInsertUrl = (txtAPIMultiInsert.Text == null) ? "http://localhost/" : txtAPIMultiInsert.Text.Trim().ToString(),
+                InventoryConsumptionActive = (togBInventoryConsump.IsChecked == true)? true : false
             };
 
             var jsonSettings = JsonConvert.SerializeObject(configSettings, Formatting.Indented);
@@ -150,6 +151,8 @@ namespace wpfGMTraceability.Views
                 var jsonWritePort = System.IO.File.ReadAllText(SettingsManager.ConfigWritePortsFilePath);
                 _configWritePort = JsonConvert.DeserializeObject<SerialPortConfig>(jsonWritePort);
                 cbOutPort.SelectedItem = _configWritePort.Port;
+
+                if (_config.InventoryConsumptionActive) { togBInventoryConsump.IsChecked = true; } else { togBInventoryConsump.IsChecked = false; }
 
                 TabVisibilityCheck();
             }
@@ -234,6 +237,14 @@ namespace wpfGMTraceability.Views
                 tabType2.Visibility = Visibility.Visible;
                 tabType3.Visibility = Visibility.Collapsed;
             }
+        }
+        private void togBInventoryConsump_Unchecked(object sender, RoutedEventArgs e)
+        {
+            txtTogBtnCont.Text = "Desactivado";
+        }
+        private void togBInventoryConsump_Checked(object sender, RoutedEventArgs e)
+        {
+            txtTogBtnCont.Text = "Activado";
         }
     }
 }

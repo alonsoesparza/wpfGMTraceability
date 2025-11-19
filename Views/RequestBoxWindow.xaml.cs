@@ -29,7 +29,7 @@ namespace wpfGMTraceability.Views
     {
         #region Inicialización y carga
         StationData BOMInventoryData;
-        List<object> MissingPart;
+        List<MissingPartToBoxRequest> MissingPart;
         string FGSerial;
         private readonly SerialPortSession _session;
         public event EventHandler ShowLoadOverlay;
@@ -38,8 +38,13 @@ namespace wpfGMTraceability.Views
         public RequestBoxWindow(SerialPortSession session, List<object> MissingPartData, StationData bOMInventoryData, string fGSerial)
         {
             InitializeComponent();
-
-            MissingPart = MissingPartData;
+            MissingPart = MissingPartData
+            .Select(x => new MissingPartToBoxRequest
+            {
+                BomPart = (string)x.GetType().GetProperty("BomPart").GetValue(x)
+            })
+            .ToList();
+            lbMissingParts.ItemsSource = MissingPart.ToList();
             BOMInventoryData = bOMInventoryData;
             _session = session;
             _session.AssignOwner(this, OnModalData);
@@ -47,7 +52,6 @@ namespace wpfGMTraceability.Views
         }
         private void RequestBox_Window_Loaded(object sender, RoutedEventArgs e)
         {
-            lbMissingParts.ItemsSource = MissingPart.ToList();
             lbLog.ItemsSource = logItems;
         }
         #endregion
@@ -69,7 +73,7 @@ namespace wpfGMTraceability.Views
                 string sLastData = "";
                 sLastData = txtScanCode.Text;
                 txtScanCode.Text = $"{data}";
-                if (data == "CLOSEWINDOW") {
+                if (data.Replace("\r", "").Replace("\n", "") == "CLOSEWINDOW") {
                     _session.ReleaseOwner(this);
                     this.Close();
                 }
@@ -88,19 +92,17 @@ namespace wpfGMTraceability.Views
             if (PipeStringPosition >= 0)
             {
                 string[] SerialArr = RMserial.Split('|');
-                bool IsPartInTheBOM = BOMInventoryData.Parts.Any(p => p.BomPart == SerialArr[2].ToString().Trim());
+                string rmPN = SerialArr[2].ToString().Trim();
+                bool IsPartInTheBOM = BOMInventoryData.Parts.Any(p => p.BomPart == rmPN);
                 if (IsPartInTheBOM)
                 {
                     var jsonEntry = new
                     {
-                        station_name = "TycoStationConnector",
+                        station_name = BOMInventoryData.Station,
                         payload = RMserial.Trim(),
                     };
                     string jsonFinal = JsonConvert.SerializeObject(jsonEntry, Formatting.None);
-
-                    ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
                     var result = await ApiCalls.PostAPIRequestBoxAsync(jsonFinal);
-                    HideLoadOverlay?.Invoke(this, EventArgs.Empty);
 
                     string ResContent = result.content;
                     int StatusCode = result.statusCode;
@@ -111,13 +113,13 @@ namespace wpfGMTraceability.Views
                     {
                         Dispatcher.Invoke(() => AddLog($"{RMserial} / {ResContent} / {StatusMessage}", "OK"));
 
-                        var TypedList = MissingPart.OfType<MissingPartToBoxRequest>().ToList();
-
-                        var leftPartsToRequestBox = TypedList
-                            .Where(p => p.BomPart != SerialArr[2].ToString().Trim())
+                        var leftPartsToRequestBox = MissingPart.ToList()
+                            .Where(p => p.BomPart.Trim() != rmPN)
                             .ToList();
 
+                        MissingPart = leftPartsToRequestBox;
                         lbMissingParts.ItemsSource = leftPartsToRequestBox;
+                        if(lbMissingParts.Items.Count == 0) { imgQRClose.Visibility = Visibility.Visible; } else { imgQRClose.Visibility = Visibility.Hidden; }
                     }
                     else {
                         //**** Mensaje de error, API no responde

@@ -112,10 +112,37 @@ namespace wpfGMTraceability.UserControls
         #region Funciones de negocio / lógica principal
         private async void DoProcess(string serial)
         {
+            //**** Revisar si esta activado el consumo de material
+            if (SettingsManager.InventoryConsumptionActive)
+            {
+                var InsufficientParts = CheckForSufficientStock();
+                if (InsufficientParts.Count > 0)
+                {
+                    var ventana = Window.GetWindow(this) as MainWindow;
+                    ventana?.MostrarOverlay(true);
+                    try
+                    {
+                        _session.ReleaseOwner(this);
+                        var modal = new RequestBoxWindow(_session, InsufficientParts, BOMInventoryData, serial);
+                        modal.Owner = Window.GetWindow(this);
+                        modal.ShowDialog();
+                        _session.AssignOwner(this, OnSerialData);
+                    }
+                    catch (Exception Ex)
+                    {
+                        Console.Write(Ex.Message);
+                    }
+                    ventana?.MostrarOverlay(false);
+                    //*** La idea es que si sigue faltando material, no nos deje continuar.
+                    RestartApp();
+                    return;
+                }
+            }
+
+            //**** Continuar el proceso
             try
             {
                 sLastData = serial;
-                ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
                 string serialclean = serial.Replace("\r", "").Replace("\n", "");
                 if (!scanList.Contains(serialclean))
                 {
@@ -180,6 +207,15 @@ namespace wpfGMTraceability.UserControls
                                 AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error")
                             );
                         }
+
+                        if (SettingsManager.InventoryConsumptionActive) {
+                            idx = "";
+                            for (int i = 0; i < scanList.Count; i++)
+                            {
+                                DoConsume(scanList.ElementAtOrDefault(0));
+                            }
+                        }
+
                         scanList.Clear();
                         txtScanCode.Text = "";
                         txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}"; ;
@@ -263,24 +299,6 @@ namespace wpfGMTraceability.UserControls
                 return (byte)0;
             }
         }
-    
-        
-
-
-
-        private List<object> CheckForSufficientStock()
-        {
-            var SufficientParts = BOMInventoryData.Parts
-                .Where(p => !p.Sufficient)
-                .Select(p => new
-                {
-                    p.BomPart,
-                    p.bom_quantity_per_piece,
-                    p.total_available
-                });
-
-            return SufficientParts.Cast<object>().ToList();
-        }
         private async Task LoadBOMDataAsync()
         {
             BOMInventoryData = await ApiCalls.GetStationDataAsync();
@@ -295,97 +313,83 @@ namespace wpfGMTraceability.UserControls
                 MessageBox.Show(ex.Message);
             }
         }
-        private void ProcessSerialNumber(string serial)
+        private List<object> CheckForSufficientStock()
         {
+            var SufficientParts = BOMInventoryData.Parts
+                .Where(p => !p.Sufficient)
+                .Select(p => new
+                {
+                    p.BomPart,
+                    p.bom_quantity_per_piece,
+                    p.total_available
+                });
 
-
-            //var InsufficientParts = CheckForSufficientStock();
-            //if (InsufficientParts.Count > 0)
-            //{
-            //    try
-            //    {
-            //        _session.ReleaseOwner(this);
-            //        var modal = new RequestBoxWindow(_session, InsufficientParts, BOMInventoryData, serial);
-            //        modal.ShowDialog();
-            //        _session.AssignOwner(this, OnSerialData);
-            _ = LoadBOMDataAsync();
-
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.Write(ex.Message);
-            //    }
-            //    return;
-            //}
-            //else
-            //{
-            //    DoConsume(serial);
-            //}
+            return SufficientParts.Cast<object>().ToList();
         }
         private async void DoConsume(string serial)
         {
-            ////** Cajas Ordenadas para recorrerlas en orden
-            //var orderedBoxesByPart = BOMInventoryData.Parts
-            //                        .Where(p => p.Boxes != null && p.Boxes.Count > 0)
-            //                        .Select(p => new
-            //                        {
-            //                            BomPart = p.BomPart,
-            //                            BomQty = p.bom_quantity_per_piece,
-            //                            Boxes = p.Boxes.OrderBy(b => b.BoxNumber).ToList()
-            //                        })
-            //                        .ToList();
+            //** Cajas Ordenadas para recorrerlas en orden
+            var orderedBoxesByPart = BOMInventoryData.Parts
+                                    .Where(p => p.Boxes != null && p.Boxes.Count > 0)
+                                    .Select(p => new
+                                    {
+                                        BomPart = p.BomPart,
+                                        BomQty = p.bom_quantity_per_piece,
+                                        Boxes = p.Boxes.OrderBy(b => b.BoxNumber).ToList()
+                                    })
+                                    .ToList();
 
-            ////** Crear la lista de consumo
-            //var consumptionItems = new List<object>();
-            //foreach (var part in orderedBoxesByPart)
-            //{
-            //    int remainingQty = part.BomQty;
+            //** Crear la lista de consumo
+            var consumptionItems = new List<object>();
+            foreach (var part in orderedBoxesByPart)
+            {
+                int remainingQty = part.BomQty;
 
-            //    foreach (var box in part.Boxes)
-            //    {
-            //        if (remainingQty <= 0)
-            //            break;
+                foreach (var box in part.Boxes)
+                {
+                    if (remainingQty <= 0)
+                        break;
 
-            //        int qtyToTake = Math.Min(box.BoxQt, remainingQty);
+                    int qtyToTake = Math.Min(box.BoxQt, remainingQty);
 
-            //        consumptionItems.Add(new
-            //        {
-            //            boxnumber = box.BoxNumber,
-            //            serialtestnumber = serial,
-            //            qty = qtyToTake
-            //        });
+                    consumptionItems.Add(new
+                    {
+                        boxnumber = box.BoxNumber,
+                        serialtestnumber = serial,
+                        qty = qtyToTake
+                    });
 
-            //        remainingQty -= qtyToTake;
-            //    }
-            //}
+                    remainingQty -= qtyToTake;
+                }
+            }
 
-            //var finalJson = new
-            //{
-            //    station_name = BOMInventoryData.Station,
-            //    items = consumptionItems
-            //};
+            var finalJson = new
+            {
+                station_name = BOMInventoryData.Station,
+                items = consumptionItems
+            };
 
-            //string jsonFinal = JsonConvert.SerializeObject(finalJson, Formatting.Indented);
+            string jsonFinal = JsonConvert.SerializeObject(finalJson, Formatting.Indented);
 
-            //ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
-            //var result = await ApiCalls.PostAPIConsumeAsync(jsonFinal);
-            //HideLoadOverlay?.Invoke(this, EventArgs.Empty);
+            ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
+            var result = await ApiCalls.PostAPIConsumeAsync(jsonFinal);
+            HideLoadOverlay?.Invoke(this, EventArgs.Empty);
 
-            //string ResContent = result.content;
-            //int StatusCode = result.statusCode;
+            string ResContent = result.content;
+            int StatusCode = result.statusCode;
 
-            //string StatusMessage = HttpStatusHelper.GetStatusMessage(StatusCode);
+            string StatusMessage = HttpStatusHelper.GetStatusMessage(StatusCode);
 
-            //if (ResContent != null)
-            //{
-            //    Dispatcher.Invoke(() => AddLog($"{serial} / {ResContent} / {StatusMessage}", "OK"));
-            //    _ = LoadBOMDataAsync();
-            //}
-            //else
-            //{
-            //    //**** Mensaje de error, API no responde
-            //    Dispatcher.Invoke(() => AddLog($"{serial} / {ResContent} / {StatusMessage}", "ERROR"));
-            //}
+            if (ResContent != null)
+            {
+                Dispatcher.Invoke(() => AddLog("[API CONSUME]", serial, "CONSUMPTION OK", StatusMessage, "", "OK"));
+                _ = LoadBOMDataAsync();
+            }
+            else
+            {
+                //**** Mensaje de error, API no responde
+                Dispatcher.Invoke(() => AddLog("[API CONSUME]", serial, "CONSUMPTION ERROR", StatusMessage, "", "ERROR"));
+            }
         }
         #endregion
 

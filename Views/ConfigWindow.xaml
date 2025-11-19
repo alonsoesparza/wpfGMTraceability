@@ -102,9 +102,10 @@
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
-                                            <Border BorderThickness="1" CornerRadius="4" Margin="4" Padding="2" Grid.Row="0" Grid.Column="0" BorderBrush="Black" >
+                                            <Border BorderThickness="1" CornerRadius="4" Grid.ColumnSpan="2" Margin="4" Padding="2" Grid.Row="0" Grid.Column="0" BorderBrush="Black" >
                                                 <StackPanel>
                                                     <TextBlock Text="API SerialCheck Url:" FontWeight="SemiBold" FontSize="17" Margin="0,0,0,6"/>
                                                     <TextBox x:Name="txtAPIUrl" FontSize="16" Margin="0,0,0,20"/>
@@ -121,6 +122,19 @@
                                                         </StackPanel>
                                                     </Button>
                                                     <TextBlock x:Name="txtVideoPath" FontSize="12" Text=".." VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border BorderThickness="1" CornerRadius="4" Margin="4" Padding="2" Grid.Row="1" Grid.Column="1" BorderBrush="Black" >
+                                                <StackPanel>
+                                                    <TextBlock Text="Activar consumo de material" FontWeight="SemiBold" FontSize="17" Margin="0,0,0,6"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <ToggleButton x:Name="togBInventoryConsump" Style="{StaticResource MaterialDesignSwitchToggleButton}" HorizontalAlignment="Left" Margin="10,10,0,10" Unchecked="togBInventoryConsump_Unchecked" Checked="togBInventoryConsump_Checked">
+                                                            <ToggleButton.LayoutTransform>
+                                                                <ScaleTransform ScaleX="2" ScaleY="2"/>
+                                                            </ToggleButton.LayoutTransform>
+                                                        </ToggleButton>
+                                                        <TextBlock x:Name="txtTogBtnCont" Text="Desactivado" VerticalAlignment="Center" FontSize="17" Margin="10,0,0,0"/>
+                                                    </StackPanel>
                                                 </StackPanel>
                                             </Border>
                                         </Grid>

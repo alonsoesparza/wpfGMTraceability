@@ -1,0 +1,74 @@
+﻿<Window x:Name="APICheck_Window" x:Class="wpfGMTraceability.Views.APICheckWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:wpfGMTraceability.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"  
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="OptionsWindow" Height="600" Width="900" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="APICheck_Window_Loaded">
+    <Grid>
+        <materialDesign:Card Margin="0" UniformCornerRadius="10" Background="LightGray">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.55*" />
+                    <RowDefinition Height="4*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" LastChildFill="False">
+                    <Button x:Name="BtnClose" Content="✕" FontWeight="Bold" FontSize="24" Width="36" Height="36" Style="{StaticResource MaterialDesignToolButton}" ToolTip="Cerrar" DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                </DockPanel>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                    <TextBlock Text="Estado de APIs" FontSize="28" HorizontalAlignment="Center" Margin="0 10 0 20" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+                </StackPanel>
+
+                <materialDesign:Card Margin="10 10 10 10" Padding="0" Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="60"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#858585" Grid.Row="0" Padding="5" BorderThickness="1" BorderBrush="#858585" Grid.ColumnSpan="3">
+                            <TextBlock Text="Revisando..." Foreground="White" FontWeight="Bold" FontSize="16" VerticalAlignment="Center"/>
+                        </Border>
+
+                        <TextBox x:Name="txtAPISerialCheck" Grid.Row="1" Grid.Column="0" materialDesign:HintAssist.Hint="API SerialCheck Url" IsEnabled="True" IsReadOnly="True" Grid.ColumnSpan="2" Text="sfdfgdfgfdg" Margin="5 10 5 0" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                        <TextBox x:Name="txtAPIInsert" Grid.Row="2" Grid.Column="0" materialDesign:HintAssist.Hint="Api Insert" IsEnabled="True" IsReadOnly="True" Grid.ColumnSpan="2" Text="sfdfgdfgfdg" Margin="5 10 5 0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <TextBox x:Name="txtAPILoadBOM" Grid.Row="3" Grid.Column="0" materialDesign:HintAssist.Hint="API Load BOM Url" IsEnabled="True" IsReadOnly="True" Grid.ColumnSpan="2" Text="sfdfgdfgfdg" Margin="5 10 5 0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <TextBox x:Name="txtAPISerialBoxRequest" Grid.Row="4" Grid.Column="0" materialDesign:HintAssist.Hint="API Serial Box Request Url" IsEnabled="True" IsReadOnly="True" Grid.ColumnSpan="2" Text="sfdfgdfgfdg" Margin="5 10 5 0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <TextBox x:Name="txtAPISerialConsume" Grid.Row="5" Grid.Column="0" materialDesign:HintAssist.Hint="API Serial Consume Url" IsEnabled="True" IsReadOnly="True" Grid.ColumnSpan="2" Text="sfdfgdfgfdg" Margin="5 10 5 0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                        <TextBox x:Name="txtAPIMultiInsert" Grid.Row="6" Grid.Column="0" materialDesign:HintAssist.Hint="API Multi Insert Url" IsEnabled="True" IsReadOnly="True" Grid.ColumnSpan="2" Text="sfdfgdfgfdg" Margin="5 10 5 0" Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <materialDesign:PackIcon x:Name="icnAPISerialCheck" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Kind="Check" Height="50" Width="50" Margin="0" Foreground="Green" Visibility="Hidden"/>
+                        <materialDesign:PackIcon x:Name="icnAPIInsert" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Kind="Check" Height="50" Width="50" Margin="0" Foreground="Green" Visibility="Hidden"/>
+                        <materialDesign:PackIcon x:Name="icnAPILoadBOM" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Kind="Check" Height="50" Width="50" Margin="0" Foreground="Green" Visibility="Hidden"/>
+                        <materialDesign:PackIcon x:Name="icnAPISerialBoxRequest" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" Kind="Check" Height="50" Width="50" Margin="0" Foreground="Green" Visibility="Hidden"/>
+                        <materialDesign:PackIcon x:Name="icnAPISerialConsume" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" Kind="Check" Height="50" Width="50" Margin="0" Foreground="Green" Visibility="Hidden"/>
+                        <materialDesign:PackIcon x:Name="icnAPIMultiInsert" Grid.Row="6" Grid.Column="2" VerticalAlignment="Center" Kind="Check" Height="50" Width="50" Margin="0" Foreground="Green" Visibility="Hidden"/>
+
+                    </Grid>
+                </materialDesign:Card>
+
+                <Button x:Name="btnClose" FontSize="16" Grid.Column="0" Grid.Row="3" Margin="10 0 10 0" Content="Cerrar" Click="btnSaveAndReconnect_Click"/>
+
+            </Grid>
+        </materialDesign:Card>
+
+    </Grid>
+</Window>

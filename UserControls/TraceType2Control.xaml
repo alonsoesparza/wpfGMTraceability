@@ -48,10 +48,8 @@
                 </StackPanel>
             </materialDesign:Card>
         </StackPanel>
-
         <!-- Last Scan Label-->
         <TextBlock x:Name="txtLastScan" Text="..." Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" FontSize="18" Foreground="Gray" VerticalAlignment="Top" FontWeight="Normal" Margin="15 0" />
-
         <!-- **** Cards de escaneos *** -->
         <!-- Primera linea -->
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="6" Margin="0 2 0 2">
@@ -130,7 +128,6 @@
                 </StackPanel>
             </materialDesign:Card>
         </StackPanel>
-
         <!-- **** Video Button **** -->
         <Button x:Name="BtnPlayVideo" Style="{StaticResource MaterialDesignFloatingActionButton}" Height="75" Width="75" BorderBrush="{x:Null}" Background="Gray" Grid.Column="5" Grid.Row="1" Grid.RowSpan="2" Margin="0 0 25 0" Foreground="White" 
 HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="BtnPlayVideo_Click">
@@ -139,7 +136,6 @@ HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="BtnPlayVideo_Click
                 <TextBlock FontWeight="SemiBold" FontSize="16" Text="Video" Margin="0 -5 0 0"/>
             </StackPanel>
         </Button>
-
         <!--Log de Actividad-->
         <materialDesign:Card Margin="10 10 10 10" Grid.ColumnSpan="4" Grid.Row="5" Grid.RowSpan="6" Grid.Column="0" Padding="0" materialDesign:ElevationAssist.Elevation="Dp8">
             <Grid>
@@ -166,7 +162,6 @@ HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="BtnPlayVideo_Click
                 </ListBox>
             </Grid>
         </materialDesign:Card>
-        
         <!--DataGrid-->
         <materialDesign:Card Margin="10 10 10 10" Grid.Column="4" Grid.ColumnSpan="2" Grid.Row="5" Grid.RowSpan="5" Padding="0" materialDesign:ElevationAssist.Elevation="Dp8">
             <Grid>
@@ -179,28 +174,52 @@ HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="BtnPlayVideo_Click
                     <TextBlock Text="BOM" Foreground="White" FontWeight="Bold" FontSize="26" VerticalAlignment="Center"/>
                 </Border>
 
-                <Border CornerRadius="12" Padding="5" Grid.Row="1">
-                    <DataGrid x:Name="dgBOM" AutoGenerateColumns="False" SelectionMode="Single" IsReadOnly="True">
+                <Border Grid.Row="1" CornerRadius="18" BorderThickness="2" ClipToBounds="True" Padding="0" Margin="4 4 4 4">
+                    <DataGrid x:Name="dgBOM" AutoGenerateColumns="False" SelectionMode="Single" IsReadOnly="True" Margin="0" Background="LightGray" BorderThickness="0" AlternatingRowBackground="#e1cdfe">
                         <DataGrid.Resources>
                             <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
                                 <Setter Property="Background" Value="#6002ee"/>
                                 <Setter Property="Foreground" Value="White"/>
+                                <!--<Setter Property="HorizontalAlignment" Value="Center" />-->
+                            </Style>
+                            <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                                <Setter Property="Background" Value="WhiteSmoke" />
+                                <Setter Property="FontWeight" Value="SemiBold"/>
                             </Style>
                         </DataGrid.Resources>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Material" Binding="{Binding BomPart}" />
-                            <DataGridTextColumn Header="Cant. por Pieza" Binding="{Binding bom_quantity_per_piece}" />
-                            <DataGridTextColumn Header="Disponible" Binding="{Binding total_available}" />
+                            <DataGridTextColumn Header="Material" Binding="{Binding BomPart}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="16" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Cant. por Pieza" Binding="{Binding bom_quantity_per_piece}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="FontSize" Value="18" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Disponible" Binding="{Binding total_available}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="FontSize" Value="18" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                             <DataGridCheckBoxColumn Header="Suficiente" Binding="{Binding Sufficient}" />
-                            <DataGridTextColumn Header="Disponible" Binding="{Binding total_available}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                </Border>                
+                </Border>
             </Grid>
         </materialDesign:Card>
-
         <!--Logo-->
         <Image Grid.Row="10" Grid.Column="4" Grid.ColumnSpan="2" Margin="0 0 10 0" Width="250" Source="/Resources/LogoWithName.png" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
-
     </Grid>
 </UserControl>

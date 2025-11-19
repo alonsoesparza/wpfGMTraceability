@@ -193,6 +193,9 @@
     <Compile Include="UserControls\TraceType3Control.xaml.cs">
       <DependentUpon>TraceType3Control.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\APICheckWindow.xaml.cs">
+      <DependentUpon>APICheckWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
@@ -237,6 +240,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\TraceType3Control.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\APICheckWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

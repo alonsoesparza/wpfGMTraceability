@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:wpfGMTraceability.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="RequestBoxWindow" Height="550" Width="700" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="RequestBox_Window_Loaded">
-    <Grid Background="Gainsboro">
+        Title="RequestBoxWindow" Height="550" Width="800" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="RequestBox_Window_Loaded">
+    <Grid>
         <materialDesign:Card Margin="0" UniformCornerRadius="15">
             <Grid>
                 <Grid.RowDefinitions>
@@ -43,10 +43,11 @@
                 </materialDesign:Card>
 
                 <!--** Scan Textbox **-->
-                <materialDesign:Card materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" BorderThickness="2" BorderBrush="Navy" Width="auto" Height="auto" Background="Blue" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" Margin="0 10 10 0">
+                <materialDesign:Card materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" BorderThickness="2" BorderBrush="Navy" Width="auto" Height="auto" Background="Blue" 
+                                     Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" Margin="0 0 10 0">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Width="32" Height="32" Kind="BarcodeScanner" Margin="5 0 0 0" Foreground="Gray" VerticalAlignment="Center" />
-                        <TextBlock x:Name="txtScanCode" FontWeight="SemiBold" VerticalAlignment="Center" FontSize="18" Foreground="White" Text="" Margin="10 0 0 0" />
+                        <TextBlock x:Name="txtScanCode" FontWeight="SemiBold" FontSize="18" Foreground="White" Text="" Margin="5 10 0 0"/>
                     </StackPanel>
                 </materialDesign:Card>
 
@@ -66,7 +67,7 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}" BorderThickness="2" CornerRadius="12" Padding="8" Margin="4" Background="{DynamicResource MaterialDesignPaper}">
-                                            <TextBlock Text="{Binding Serials}" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Padding="20" VerticalAlignment="Center" Background="Transparent"/>
+                                            <TextBlock Text="{Binding BomPart}" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Padding="20" VerticalAlignment="Center" Background="Transparent"/>
                                         </Border>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
@@ -94,7 +95,7 @@
                     </materialDesign:Card>
                 </Grid>
 
-                <Image Grid.Row="4" Grid.Column="0" Margin="10" Source="/Resources/QRCloseWindow.png" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <Image x:Name="imgQRClose" Grid.Row="4" Grid.Column="0" Margin="10" Source="/Resources/QRCloseWindow.png" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </Grid>
         </materialDesign:Card>
     </Grid>
