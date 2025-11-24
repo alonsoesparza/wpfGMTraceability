@@ -115,6 +115,7 @@ namespace wpfGMTraceability.UserControls
         #region Funciones de negocio / lógica principal
         private async void DoProcess(string serial)
         {
+            var ventana = Window.GetWindow(this) as MainWindow;
             try
             {
                 sLastData = serial;
@@ -129,41 +130,38 @@ namespace wpfGMTraceability.UserControls
                         CompCount++;
                         txtCompCount.Text = $@"{CompCount}/{Comp}";
                         DrawCardWithSerial(CompCount, serialclean);
-                        HideLoadOverlay?.Invoke(this, EventArgs.Empty);
+                        ventana?.MostrarOverlay(false);
                     }
                     else
                     {
                         if (CompCount == 0) { txtCompCount.Text = ""; }
-                        HideLoadOverlay?.Invoke(this, EventArgs.Empty);
                         reloadInit = true;
+                        ventana?.MostrarOverlay(false);
                         return;
                     }
                 }
                 else
                 {
                     Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "-", "-", "Serie ya escaneada!", "Warning"));
-                    HideLoadOverlay?.Invoke(this, EventArgs.Empty);
+                    ventana?.MostrarOverlay(false);
                     return;
                 }
 
                 if (CompCount == Comp)
                 {
-                    var ventana = Window.GetWindow(this) as MainWindow;
                     ventana?.MostrarOverlay(true);
-
-                    _session.ReleaseOwner(this);
-                    var modal = new TraceType3LabelScanWindow(_session);
-                    modal.Owner = Window.GetWindow(this);
-                    bool? resultado = modal.ShowDialog();
-
-                    _session.AssignOwner(this, OnSerialData);
-                    if (resultado == true)
+                    var respuesta = await writer.WriteAndWaitForPassOrResetAsync("OK", overallTimeoutMs: null);
+                    if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))
                     {
+                        //*****Escaneo de etiqueta despues de la respuesta del Dynalab
+                        _session.ReleaseOwner(this);
+                        var modal = new TraceType3LabelScanWindow(_session);
+                        modal.Owner = Window.GetWindow(this);
+                        bool? resultado = modal.ShowDialog();
+                        _session.AssignOwner(this, OnSerialData);
                         //**Valor retornado, habria qeu validarlo en la ventana del escaneo de la etiqueta
                         string valor = modal.LabelScanCode;
-                        var respuesta = await writer.WriteAndWaitForPassOrResetAsync("OK", overallTimeoutMs: null);
-
-                        if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))
+                        if (resultado == true)
                         {
                             //***Hacer el insert
                             var dict = new Dictionary<string, object>();
@@ -181,35 +179,36 @@ namespace wpfGMTraceability.UserControls
 
                             if (resInsert.statusCode == (int)HttpStatusCode.OK)
                             {
-                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "MULTI INSERT OK", resInsert.statusCode.ToString().Trim(), null, "OK") );
+                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "MULTI INSERT OK", resInsert.statusCode.ToString().Trim(), null, "OK"));
                             }
                             else
                             {
-                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error") );
+                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error"));
                             }
                             scanList.Clear();
                             txtScanCode.Text = "";
-                            txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}"; ;
+                            txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}";
                             txtCompCount.Text = "";
                             CompCount = 0;
-                            HideLoadOverlay?.Invoke(this, EventArgs.Empty);
                         }
-                        else if (string.Equals(respuesta, "RESET", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Dispatcher.Invoke(() => AddLog("[PLC RESET]", serial, "RESET RECIBIDO", "-", null, "SystemInfo", true) );
-                            RestartApp();
-                        }
-                        else
-                        {
-                            //***Si Dynalab no manda señal ** validar
-                        }
+                        ventana?.MostrarOverlay(false);
+                        //**** Si no pasa (que el Dynalab no arroje el PASS)
                     }
-                    ventana?.MostrarOverlay(false);
+                    else if (string.Equals(respuesta, "RESET", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Dispatcher.Invoke(() => AddLog("[PLC RESET]", serial, "RESET RECIBIDO", "-", null, "SystemInfo", true));
+                        RestartApp();
+                    }
+                    else
+                    {
+                        //***Si Dynalab no manda señal ** validar
+                    }
                 }
             }
             catch (Exception Ex)
             {
                 Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-", Ex.Message, "SystemError"));
+                ventana?.MostrarOverlay(false);
             }
         }
         private async Task<byte> CheckSerialNumberAsync(string serial)
@@ -282,8 +281,7 @@ namespace wpfGMTraceability.UserControls
             {
                 MessageBox.Show(ex.Message);
             }
-        }
-        
+        }        
         #endregion
 
         #region Liberación de recursos
