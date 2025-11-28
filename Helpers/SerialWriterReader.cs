@@ -29,7 +29,6 @@ namespace wpfGMTraceability.Helpers
                 Encoding = System.Text.Encoding.ASCII
             };
         }
-
         public void OpenPort()
         {
             if (_disposed) throw new ObjectDisposedException(nameof(SerialWriterReader));
@@ -46,12 +45,10 @@ namespace wpfGMTraceability.Helpers
             }
             catch { /* ignore */ }
         }
-
         public void ClosePort()
         {
             if (_serialPort.IsOpen) _serialPort.Close();
         }
-
         public void SetDefaultTimeout(int timeoutMs)
         {
             _defaultTimeoutMs = timeoutMs;
@@ -64,7 +61,6 @@ namespace wpfGMTraceability.Helpers
                 }
             }
         }
-
         public void Write(string data)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(SerialWriterReader));
@@ -75,7 +71,6 @@ namespace wpfGMTraceability.Helpers
                 _serialPort.WriteLine(data);
             }
         }
-
         public string Read(int? timeoutMs = null)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(SerialWriterReader));
@@ -95,9 +90,7 @@ namespace wpfGMTraceability.Helpers
                 }
             }
         }
-
         // --- ASYNC ---
-
         public Task WriteAsync(string data)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(SerialWriterReader));
@@ -110,7 +103,6 @@ namespace wpfGMTraceability.Helpers
                 }
             });
         }
-
         public Task<string> ReadAsync(int? timeoutMs = null)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(SerialWriterReader));
@@ -132,7 +124,6 @@ namespace wpfGMTraceability.Helpers
                 }
             });
         }
-
         /// <summary>
         /// Envía y espera UNA línea de respuesta con timeout por llamada (no cuelga la UI).
         /// </summary>
@@ -165,19 +156,13 @@ namespace wpfGMTraceability.Helpers
                 }
             });
         }
-
         /// <summary>
         /// Envía y espera HASTA recibir exactamente 'expected'.
         /// - overallTimeoutMs: tiempo total máximo (null = indefinido).
         /// - ct: permite cancelar desde afuera sin colgar la UI.
         /// Lee por ventanas de 1s para poder checar cancelación/timeout.
         /// </summary>
-        public Task<bool> WriteAndWaitForAsync(
-            string mensaje,
-            string expected,
-            int? overallTimeoutMs = null,
-            bool caseInsensitive = true,
-            CancellationToken ct = default)
+        public Task<bool> WriteAndWaitForAsync(string mensaje, string expected, int? overallTimeoutMs = null, bool caseInsensitive = true, CancellationToken ct = default)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(SerialWriterReader));
 
@@ -225,11 +210,7 @@ namespace wpfGMTraceability.Helpers
                 }
             }, ct);
         }
-        public Task<string> WriteAndWaitForPassOrResetAsync(
-            string mensaje,
-            int? overallTimeoutMs = null,
-            bool caseInsensitive = true,
-            CancellationToken ct = default)
+        public Task<string> WriteAndWaitForPassOrResetAsync(string mensaje, int? overallTimeoutMs = null, bool caseInsensitive = true, CancellationToken ct = default)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(SerialWriterReader));
@@ -343,7 +324,6 @@ namespace wpfGMTraceability.Helpers
                 }
             }
         }
-
         public void Dispose()
         {
             if (_disposed) return;

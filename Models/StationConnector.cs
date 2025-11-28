@@ -23,6 +23,7 @@ namespace wpfGMTraceability.Models
     }
     public class Box
     {
+        public string Part { get; set; }
         public string BoxNumber { get; set; }
         public int BoxQt { get; set; }
     }

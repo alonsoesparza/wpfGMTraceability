@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:wpfGMTraceability.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="RequestBoxWindow" Height="550" Width="800" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="RequestBox_Window_Loaded">
+        Title="RequestBoxWindow" Height="550" Width="850" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="RequestBox_Window_Loaded">
     <Grid>
         <materialDesign:Card Margin="0" UniformCornerRadius="15">
             <Grid>
@@ -18,7 +18,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="190"/>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -30,12 +30,12 @@
                 <TextBlock Text="Escaneo de cajas faltantes" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" FontSize="28" HorizontalAlignment="left" Margin="10 10 0 20" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
 
                 <!-- ** Missing BOM PartNumbers ** -->
-                <materialDesign:Card Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2" Padding="2" Margin="10" UniformCornerRadius="6">
+                <materialDesign:Card Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2" Padding="2" Margin="5" UniformCornerRadius="6">
                     <ListBox x:Name="lbMissingParts" ItemsSource="{Binding}" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="36" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" SelectionMode="Single">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}" BorderThickness="1" CornerRadius="12" Padding="0" Margin="0 0 0 0" Background="{DynamicResource MaterialDesignPaper}">
-                                    <TextBlock Text="{Binding BomPart}" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Padding="10" VerticalAlignment="Center" Background="Transparent"/>
+                                    <TextBlock Text="{Binding BomPart}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Padding="10" VerticalAlignment="Center" Background="Transparent"/>
                                 </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -83,12 +83,15 @@
                         <ListBox x:Name="lbLog" BorderThickness="0">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <DockPanel Margin="2" LastChildFill="True">
-                                        <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Width="20" Height="20" Margin="0,0,0,0" />
-                                        <Border Padding="6" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
-                                            <TextBlock Text="{Binding Formatted}" Foreground="White" FontSize="12" />
-                                        </Border>
-                                    </DockPanel>
+                                    <StackPanel Orientation="Vertical">
+                                        <DockPanel Margin="2" LastChildFill="True">
+                                            <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Width="20" Height="20" Margin="0,0,0,0" />
+                                            <Border Padding="6" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
+                                                <TextBlock Text="{Binding Formatted}" Foreground="White" FontSize="12" />
+                                            </Border>
+                                        </DockPanel>
+                                        <Separator x:Name="sprLine" Margin="2" Background="DarkGray" Height="3" Visibility="{Binding SeparatorVisible}"/>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>

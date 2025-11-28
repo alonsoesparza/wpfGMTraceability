@@ -42,8 +42,9 @@ namespace wpfGMTraceability.Views
 
             string readPort = (cbInPort.SelectedItem == null) ? "" : cbInPort.SelectedItem.ToString();
             string writePort = (cbOutPort.SelectedItem == null) ? "" : cbOutPort.SelectedItem.ToString();
+            string readLabelPort = (cbLabelPort.SelectedItem == null) ? "" : cbLabelPort.SelectedItem.ToString();
 
-            if(readPort == writePort) { 
+            if (readPort == writePort) { 
                 MessageBox.Show("Los puertos de lectura y escritura no pueden ser iguales.", "Error de configuración", MessageBoxButton.OK, MessageBoxImage.Warning);
                 cbOutPort.SelectedIndex = -1;
                 writePort = "";
@@ -62,6 +63,15 @@ namespace wpfGMTraceability.Views
             var configWritePorts = new SerialPortConfig
             {
                 Port = writePort,
+                BaudRate = 9600,
+                Parity = Parity.None,
+                DataBits = 8,
+                StopBits = StopBits.One
+            };
+
+            var configLabelPorts = new SerialPortConfig
+            {
+                Port = readLabelPort,
                 BaudRate = 9600,
                 Parity = Parity.None,
                 DataBits = 8,
@@ -92,6 +102,9 @@ namespace wpfGMTraceability.Views
             var jsonWritePort = JsonConvert.SerializeObject(configWritePorts, Formatting.Indented);
             System.IO.File.WriteAllText(SettingsManager.ConfigWritePortsFilePath, jsonWritePort);
 
+            var jsonLabelPort = JsonConvert.SerializeObject(configLabelPorts, Formatting.Indented);
+            System.IO.File.WriteAllText(SettingsManager.ConfigLabelPortsFilePath, jsonLabelPort);
+
             try
             {
                 DialogResult = true;
@@ -120,6 +133,7 @@ namespace wpfGMTraceability.Views
             // Cargar puertos disponibles
             cbInPort.ItemsSource = new List<string>(ports);
             cbOutPort.ItemsSource = new List<string>(ports);
+            cbLabelPort.ItemsSource = new List<string>(ports);
 
             // Ejemplo de carga
             LoadCOMs();
@@ -151,6 +165,11 @@ namespace wpfGMTraceability.Views
                 var jsonWritePort = System.IO.File.ReadAllText(SettingsManager.ConfigWritePortsFilePath);
                 _configWritePort = JsonConvert.DeserializeObject<SerialPortConfig>(jsonWritePort);
                 cbOutPort.SelectedItem = _configWritePort.Port;
+
+                SerialPortConfig _configLabelPort;
+                var jsonLabelPorts = System.IO.File.ReadAllText(SettingsManager.ConfigLabelPortsFilePath);
+                _configLabelPort = JsonConvert.DeserializeObject<SerialPortConfig>(jsonLabelPorts);
+                cbLabelPort.SelectedItem = _configLabelPort.Port;
 
                 if (_config.InventoryConsumptionActive) { togBInventoryConsump.IsChecked = true; } else { togBInventoryConsump.IsChecked = false; }
 

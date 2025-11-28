@@ -170,6 +170,7 @@
     <Compile Include="Helpers\HttpStatusHelper.cs" />
     <Compile Include="Helpers\IMainWindowHost.cs" />
     <Compile Include="Helpers\IOverlayAware.cs" />
+    <Compile Include="Helpers\MaterialInventoryConsume.cs" />
     <Compile Include="Helpers\SerialPortConfig.cs" />
     <Compile Include="Helpers\SerialWriter.cs" />
     <Compile Include="Helpers\SerialWriterReader.cs" />

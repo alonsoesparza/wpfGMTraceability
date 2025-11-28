@@ -30,7 +30,10 @@ namespace wpfGMTraceability.UserControls
         #region Inicialización y carga
         private SerialWriterReader writer;
         public event Action<string> StationTitle;
+
         StationData BOMInventoryData;
+        MaterialInventoryConsume InventoryCls = new MaterialInventoryConsume();
+
         private SerialPortSession _session;
         ObservableCollection<ScanLogItem> logItems = new ObservableCollection<ScanLogItem>();
         DispatcherTimer cleanTimer;
@@ -71,15 +74,23 @@ namespace wpfGMTraceability.UserControls
             cleanTimer.Start();
             LoadInit();
         }
-        private void LoadInit()
+        private async void LoadInit(bool _reloadOnlyBOMInventory = false)
         {
-            var window = Window.GetWindow(this) as IMainWindowHost;
-            window?.SetWindowTitle("Nuevo título desde el UserControl");
-            lbLog.ItemsSource = logItems;
-            _ = LoadBOMDataAsync();
+            if (!_reloadOnlyBOMInventory)
+            {
+                var window = Window.GetWindow(this) as IMainWindowHost;
+                window?.SetWindowTitle("Nuevo título desde el UserControl");
+                lbLog.ItemsSource = logItems;
+            }
+            BOMInventoryData = await InventoryCls.LoadBOMDataAsync();
+            if (BOMInventoryData != null)
+            {
+                StationTitle?.Invoke(BOMInventoryData.Station.ToString());
+                dgBOM.ItemsSource = BOMInventoryData.Parts;
+                Comp = BOMInventoryData.Comp;
+            }
         }
-        #endregion      
-        
+        #endregion            
         #region Eventos del sistema
         private void BtnPlayVideo_Click(object sender, RoutedEventArgs e)
         {
@@ -92,8 +103,7 @@ namespace wpfGMTraceability.UserControls
 
             ventana?.MostrarOverlay(false);
         }
-        #endregion
-        
+        #endregion    
         #region Eventos de comunicación
         private void OnSerialData(object sender, string data)
         {
@@ -107,8 +117,7 @@ namespace wpfGMTraceability.UserControls
             });
             DoProcess(data);
         }
-        #endregion
-        
+        #endregion    
         #region Funciones de negocio / lógica principal
         private async void DoProcess(string serial)
         {
@@ -166,7 +175,7 @@ namespace wpfGMTraceability.UserControls
                 }
                 else
                 {
-                    Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "-", "-", "Serie ya escaneada!", "Warning"));
+                    Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "-", "-", "Serie ya escaneada!", "Warning", Visibility.Collapsed));
                     HideLoadOverlay?.Invoke(this, EventArgs.Empty);
                     return;
                 }
@@ -198,21 +207,32 @@ namespace wpfGMTraceability.UserControls
                         if (resInsert.statusCode == (int)HttpStatusCode.OK)
                         {
                             Dispatcher.Invoke(() =>
-                                AddLog("[API INSERT]", "", "MULTI INSERT OK", resInsert.statusCode.ToString().Trim(), null, "OK")
+                                AddLog("[API INSERT]", "", "MULTI INSERT OK", resInsert.statusCode.ToString().Trim(), null, "OK", Visibility.Collapsed)
                             );
                         }
                         else
                         {
                             Dispatcher.Invoke(() =>
-                                AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error")
+                                AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error", Visibility.Collapsed)
                             );
                         }
 
                         if (SettingsManager.InventoryConsumptionActive) {
                             idx = "";
+                            Visibility separatorVisibility;
                             for (int i = 0; i < scanList.Count; i++)
                             {
-                                DoConsume(scanList.ElementAtOrDefault(0));
+                                var result = await InventoryCls.DoConsume(scanList.ElementAtOrDefault(i));
+
+                                if (i == scanList.Count - 1)
+                                {
+                                    separatorVisibility = Visibility.Visible;
+                                }
+                                else
+                                {
+                                    separatorVisibility = Visibility.Collapsed;
+                                }
+                                Dispatcher.Invoke(() => AddLog("[API CONSUME]", result.serial, result.message, result.ToString().Trim(), "", result.typeMsj, separatorVisibility));
                             }
                         }
 
@@ -226,9 +246,8 @@ namespace wpfGMTraceability.UserControls
                     else if (string.Equals(respuesta, "RESET", StringComparison.OrdinalIgnoreCase))
                     {
                         Dispatcher.Invoke(() =>
-                            AddLog("[PLC RESET]", serial, "RESET RECIBIDO", "-", null, "SystemInfo", true)
+                            AddLog("[PLC RESET]", serial, "RESET RECIBIDO", "-", null, "SystemInfo", Visibility.Collapsed)
                         );
-
                         RestartApp();
                     }
                     else
@@ -239,7 +258,7 @@ namespace wpfGMTraceability.UserControls
             }
             catch (Exception Ex)
             {
-                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-", Ex.Message, "SystemError"));
+                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-", Ex.Message, "SystemError", Visibility.Collapsed));
             }            
         }
         private async Task<byte> CheckSerialNumberAsync(string serial)
@@ -270,7 +289,7 @@ namespace wpfGMTraceability.UserControls
                     }
 
                     Dispatcher.Invoke(() =>
-                        AddLog("[SERIAL CHECK]", serial, Res, result.statusCode.ToString().Trim(), null, ResLogType)
+                        AddLog("[SERIAL CHECK]", serial, Res, result.statusCode.ToString().Trim(), null, ResLogType, Visibility.Collapsed)
                     );
 
                     if (Res == "OK")
@@ -279,12 +298,12 @@ namespace wpfGMTraceability.UserControls
                     }
                     else if (Res == "NO_OK")
                     {
-                        Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_OK", result.statusCode.ToString().Trim(), null, "Error"));
+                        Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_OK", result.statusCode.ToString().Trim(), null, "Error", Visibility.Collapsed));
                         return (byte)0;
                     }
                     else
                     {
-                        Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_RESPONSE", result.statusCode.ToString().Trim(), $" {result.content.ToString().Substring(0, 64)}", "SystemError"));
+                        Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_RESPONSE", result.statusCode.ToString().Trim(), $" {result.content.ToString().Substring(0, 64)}", "SystemError", Visibility.Collapsed));
                         return (byte)0;
                     }
                 }
@@ -295,22 +314,8 @@ namespace wpfGMTraceability.UserControls
             }
             catch (Exception Ex)
             {
-                Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_RESPONSE", "", $" {Ex.ToString()}", "SystemError"));
+                Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_RESPONSE", "", $" {Ex.ToString()}", "SystemError", Visibility.Collapsed));
                 return (byte)0;
-            }
-        }
-        private async Task LoadBOMDataAsync()
-        {
-            BOMInventoryData = await ApiCalls.GetStationDataAsync();
-            try
-            {
-                StationTitle?.Invoke(BOMInventoryData.Station.ToString());
-                dgBOM.ItemsSource = BOMInventoryData.Parts;
-                Comp = BOMInventoryData.Comp;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
         }
         private List<object> CheckForSufficientStock()
@@ -326,73 +331,7 @@ namespace wpfGMTraceability.UserControls
 
             return SufficientParts.Cast<object>().ToList();
         }
-        private async void DoConsume(string serial)
-        {
-            //** Cajas Ordenadas para recorrerlas en orden
-            var orderedBoxesByPart = BOMInventoryData.Parts
-                                    .Where(p => p.Boxes != null && p.Boxes.Count > 0)
-                                    .Select(p => new
-                                    {
-                                        BomPart = p.BomPart,
-                                        BomQty = p.bom_quantity_per_piece,
-                                        Boxes = p.Boxes.OrderBy(b => b.BoxNumber).ToList()
-                                    })
-                                    .ToList();
-
-            //** Crear la lista de consumo
-            var consumptionItems = new List<object>();
-            foreach (var part in orderedBoxesByPart)
-            {
-                int remainingQty = part.BomQty;
-
-                foreach (var box in part.Boxes)
-                {
-                    if (remainingQty <= 0)
-                        break;
-
-                    int qtyToTake = Math.Min(box.BoxQt, remainingQty);
-
-                    consumptionItems.Add(new
-                    {
-                        boxnumber = box.BoxNumber,
-                        serialtestnumber = serial,
-                        qty = qtyToTake
-                    });
-
-                    remainingQty -= qtyToTake;
-                }
-            }
-
-            var finalJson = new
-            {
-                station_name = BOMInventoryData.Station,
-                items = consumptionItems
-            };
-
-            string jsonFinal = JsonConvert.SerializeObject(finalJson, Formatting.Indented);
-
-            ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
-            var result = await ApiCalls.PostAPIConsumeAsync(jsonFinal);
-            HideLoadOverlay?.Invoke(this, EventArgs.Empty);
-
-            string ResContent = result.content;
-            int StatusCode = result.statusCode;
-
-            string StatusMessage = HttpStatusHelper.GetStatusMessage(StatusCode);
-
-            if (ResContent != null)
-            {
-                Dispatcher.Invoke(() => AddLog("[API CONSUME]", serial, "CONSUMPTION OK", StatusMessage, "", "OK"));
-                _ = LoadBOMDataAsync();
-            }
-            else
-            {
-                //**** Mensaje de error, API no responde
-                Dispatcher.Invoke(() => AddLog("[API CONSUME]", serial, "CONSUMPTION ERROR", StatusMessage, "", "ERROR"));
-            }
-        }
         #endregion
-
         #region Liberación de recursos
         private void TraceType2_Control_Unloaded(object sender, RoutedEventArgs e)
         {
@@ -400,9 +339,8 @@ namespace wpfGMTraceability.UserControls
             writer.ClosePort();
         }
         #endregion
-
         #region Logging y diagnóstico
-        public void AddLog(string titleItem, string serial, string apiResponse, string apiStatus, string mensaje, string tipo, bool persistente = false)
+        public void AddLog(string titleItem, string serial, string apiResponse, string apiStatus, string mensaje, string tipo, Visibility separatorVisible)
         {
             var nuevoLog = new ScanLogItem
             {
@@ -413,14 +351,13 @@ namespace wpfGMTraceability.UserControls
                 Msj = mensaje,
                 MsjType = tipo,
                 Timestamp = DateTime.Now,
-                Persistent = persistente
+                SeparatorVisible = separatorVisible
             };
 
             logItems.Add(nuevoLog);
             lbLog.ScrollIntoView(nuevoLog);
         }
         #endregion
-
         #region Utilidades
         private void RestartApp()
         {
@@ -510,11 +447,10 @@ namespace wpfGMTraceability.UserControls
         private void CleanLogs()
         {
             var haceUnMinuto = DateTime.Now.AddMinutes(-5);
-            var recientes = logItems.Where(log => log.Persistent || log.Timestamp >= haceUnMinuto).ToList();
-
+            var recientes = logItems.Where(log => log.Timestamp >= haceUnMinuto).ToList();
             logItems.Clear();
-            foreach (var log in recientes)
-                logItems.Add(log);
+            //foreach (var log in recientes)
+            //    logItems.Add(log);
         }
         #endregion
     }

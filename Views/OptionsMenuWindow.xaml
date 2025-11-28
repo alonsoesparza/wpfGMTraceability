@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:wpfGMTraceability.Views"
         mc:Ignorable="d" WindowStartupLocation="CenterOwner"
-        Title="OptionsWindow" Height="350" Width="400" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize">
+        Title="OptionsWindow" Height="450" Width="400" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize">
     <Grid>
         <materialDesign:Card Margin="0" UniformCornerRadius="10">
             <Grid>
@@ -18,7 +18,8 @@
                     <!-- Contenido del popup -->
                     <StackPanel Margin="20">
                         <Button x:Name="BtnConfig" Content="Configurar" Height="60" FontSize="20" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,0,20" Click="BtnConfig_Click"/>
-                        <Button x:Name="BtnMainClose" Height="60" FontSize="20" Content="Cerrar Aplicacion" Background="#FF5722" BorderBrush="Red" Style="{StaticResource MaterialDesignRaisedButton}" Click="BtnMainClose_Click" Margin="0,0,0,20" />
+                        <Button x:Name="BtnAddBoxes" Content="Agregar Cajas" Height="60" FontSize="20" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,10,0,20" Click="BtnAddBoxes_Click" Visibility="Collapsed"/>
+                        <Button x:Name="BtnMainClose" Height="60" FontSize="20" Content="Cerrar Aplicacion" Background="#FF5722" BorderBrush="Red" Style="{StaticResource MaterialDesignRaisedButton}" Click="BtnMainClose_Click" Margin="0,120,0,20" />
                     </StackPanel>
                 </StackPanel>
             </Grid>

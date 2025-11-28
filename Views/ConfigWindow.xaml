@@ -12,7 +12,7 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*" />
-                    <ColumnDefinition Width="1.2*" />
+                    <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.75*" />
@@ -47,12 +47,16 @@
                             <StackPanel Grid.Row="1" Margin="12">
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left"  Orientation="Horizontal">
                                     <StackPanel Margin="0 10 20 0">
-                                        <TextBlock Text="Puerto COM Entrada:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
+                                        <TextBlock Text="COM (Scanner):" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
                                         <ComboBox x:Name="cbInPort" FontSize="16" Margin="0,0,0,20"/>
                                     </StackPanel>
                                     <StackPanel Margin="0 10 20 0">
-                                        <TextBlock Text="Puerto COM Salida:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
+                                        <TextBlock Text="COM Salida:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
                                         <ComboBox x:Name="cbOutPort" FontSize="16" Margin="0,0,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0 10 20 0">
+                                        <TextBlock Text="COM Etiqueta:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
+                                        <ComboBox x:Name="cbLabelPort" FontSize="16" Margin="0,0,0,0"/>
                                     </StackPanel>
                                     <StackPanel Margin="0 10 10 0">
                                         <TextBlock Text="Tipo Traceabilidad:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
@@ -61,14 +65,11 @@
                                             <ComboBoxItem Content="Tipo 2" />
                                             <ComboBoxItem Content="Tipo 3" />
                                         </ComboBox>
-                                    </StackPanel>
-                                    
-                                    <StackPanel x:Name="stkTitleWindowName" Margin="0 10 20 0" Visibility="Hidden">
+                                    </StackPanel>                                    
+                                    <StackPanel x:Name="stkTitleWindowName" Margin="0 10 20 0" Visibility="Visible">
                                         <TextBlock x:Name="txbTitleWindowName" Text="Titulo ventana:" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,5"/>
-                                        <TextBox x:Name="txtWindowName" materialDesign:HintAssist.Hint="Nombre de la estacion" FontSize="16" Padding="4"/>
+                                        <TextBox x:Name="txtWindowName" materialDesign:HintAssist.Hint="Nom. de la estacion" FontSize="16" Padding="4"/>
                                     </StackPanel>
-                                    
-                                    
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -205,8 +206,7 @@
 
                                     <TabItem x:Name="tabType3" Header="🔗 Trac. Tipo 3" Visibility="Collapsed">
                                         <StackPanel Margin="0">
-                                            <TextBlock Text="Contenido de la tercera pestaña"
-Foreground="White"/>
+                                            <TextBlock Text="Contenido de la tercera pestaña" Foreground="White"/>
                                         </StackPanel>
                                     </TabItem>
 

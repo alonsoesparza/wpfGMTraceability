@@ -12,6 +12,7 @@ namespace wpfGMTraceability.Helpers
         public static string ConfigSettingsFilePath = $@"{AppFolderPath}DATA\Settings.json";
         public static string ConfigPortsFilePath = $@"{AppFolderPath}DATA\Ports.json";
         public static string ConfigWritePortsFilePath = $@"{AppFolderPath}DATA\WPorts.json";
+        public static string ConfigLabelPortsFilePath = $@"{AppFolderPath}DATA\ReadLabelPorts.json";
         public static string SerialPortStatusMessage = "...";
         public static string VideoFileName = "...";
         public static string TraceType1WindowName = "(NONAME)";

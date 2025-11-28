@@ -84,12 +84,15 @@ HorizontalAlignment="Right" VerticalAlignment="Center" Click="BtnPlayVideo_Click
                 <ListBox x:Name="lbLog" VerticalAlignment="Bottom" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Stretch" Grid.Row="1">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <DockPanel Margin="0" LastChildFill="True" HorizontalAlignment="Stretch">
-                                <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Height="60" Width="60" Margin="0" />
-                                <Border Padding="2" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
-                                    <TextBlock Text="{Binding Formatted}" Foreground="WhiteSmoke" FontSize="24" />
-                                </Border>
-                            </DockPanel>
+                            <StackPanel Orientation="Vertical">
+                                <DockPanel Margin="0" LastChildFill="True" HorizontalAlignment="Stretch">
+                                    <materialDesign:PackIcon Kind="{Binding MsjType, Converter={StaticResource TypeToIconConverter}}" Height="60" Width="60" Margin="0" />
+                                    <Border Padding="2" CornerRadius="4" Background="{Binding MsjType, Converter={StaticResource TypeToColorConverter}}">
+                                        <TextBlock Text="{Binding Formatted}" Foreground="WhiteSmoke" FontSize="24" />
+                                    </Border>
+                                </DockPanel>
+                                <Separator x:Name="sprLine" Margin="2" Background="DarkGray" Height="3" Visibility="{Binding SeparatorVisible}"/>
+                            </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

@@ -36,6 +36,10 @@ namespace wpfGMTraceability.Views
             ventana?.MostrarOverlay(false);
             this.Close();
         }
+        private void BtnAddBoxes_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
         private void BtnMainClose_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.MainWindow.Close();

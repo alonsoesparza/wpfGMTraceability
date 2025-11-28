@@ -2,21 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO.Ports;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using wpfGMTraceability.Helpers;
 using wpfGMTraceability.Managers;
@@ -33,7 +24,9 @@ namespace wpfGMTraceability.UserControls
         #region Inicialización y carga
         private SerialWriterReader writer;
         public event Action<string> StationTitle;
+
         StationData BOMInventoryData;
+        MaterialInventoryConsume InventoryCls = new MaterialInventoryConsume();
         private SerialPortSession _session;
         ObservableCollection<ScanLogItem> logItems = new ObservableCollection<ScanLogItem>();
         DispatcherTimer cleanTimer;
@@ -74,15 +67,23 @@ namespace wpfGMTraceability.UserControls
             cleanTimer.Start();
             LoadInit();
         }
-        private void LoadInit()
+        private async void LoadInit(bool _reloadOnlyBOMInventory = false)
         {
-            var window = Window.GetWindow(this) as IMainWindowHost;
-            window?.SetWindowTitle("Nuevo título desde el UserControl");
-            lbLog.ItemsSource = logItems;
-            _ = LoadBOMDataAsync();
+            if (!_reloadOnlyBOMInventory)
+            {
+                var window = Window.GetWindow(this) as IMainWindowHost;
+                window?.SetWindowTitle("Nuevo título desde el UserControl");
+                lbLog.ItemsSource = logItems;
+            }            
+            BOMInventoryData = await InventoryCls.LoadBOMDataAsync();
+            if (BOMInventoryData != null)
+            {
+                StationTitle?.Invoke(BOMInventoryData.Station.ToString());
+                dgBOM.ItemsSource = BOMInventoryData.Parts;
+                Comp = BOMInventoryData.Comp;
+            }
         }
         #endregion
-
         #region Eventos del sistema
         private void BtnPlayVideo_Click(object sender, RoutedEventArgs e)
         {
@@ -96,7 +97,6 @@ namespace wpfGMTraceability.UserControls
             ventana?.MostrarOverlay(false);
         }
         #endregion
-
         #region Eventos de comunicación
         private void OnSerialData(object sender, string data)
         {
@@ -111,15 +111,35 @@ namespace wpfGMTraceability.UserControls
             DoProcess(data);
         }
         #endregion
-
         #region Funciones de negocio / lógica principal
         private async void DoProcess(string serial)
         {
             var ventana = Window.GetWindow(this) as MainWindow;
+            //**** Revisar si esta activado el consumo de material
+            if (SettingsManager.InventoryConsumptionActive)
+            {
+                var InsufficientParts = InventoryCls.CheckForSufficientStock();
+                if (InsufficientParts.Count > 0)
+                {
+                    ventana?.MostrarOverlay(true);
+                    try
+                    {
+                        OpenRequestBoxWindow(serial, InsufficientParts);
+                    }
+                    catch (Exception Ex)
+                    {
+                        Console.Write(Ex.Message);
+                    }
+                    ventana?.MostrarOverlay(false);
+                    //*** La idea es que si sigue faltando material, no nos deje continuar.
+                    RestartApp();
+                    return;
+                }
+            }
+
             try
             {
                 sLastData = serial;
-                ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
                 string serialclean = serial.Replace("\r", "").Replace("\n", "");
                 if (!scanList.Contains(serialclean))
                 {
@@ -142,14 +162,14 @@ namespace wpfGMTraceability.UserControls
                 }
                 else
                 {
-                    Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "-", "-", "Serie ya escaneada!", "Warning"));
+                    Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "-", "-", "Serie ya escaneada!", "Warning", Visibility.Collapsed));
                     ventana?.MostrarOverlay(false);
                     return;
                 }
 
                 if (CompCount == Comp)
                 {
-                    ventana?.MostrarOverlay(true);
+                    ventana?.MostrarOverlay(true,true);
                     var respuesta = await writer.WriteAndWaitForPassOrResetAsync("OK", overallTimeoutMs: null);
                     if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))
                     {
@@ -179,24 +199,47 @@ namespace wpfGMTraceability.UserControls
 
                             if (resInsert.statusCode == (int)HttpStatusCode.OK)
                             {
-                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "MULTI INSERT OK", resInsert.statusCode.ToString().Trim(), null, "OK"));
+                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "MULTI INSERT OK", resInsert.statusCode.ToString().Trim(), null, "OK", Visibility.Collapsed));
                             }
                             else
                             {
-                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error"));
+                                Dispatcher.Invoke(() => AddLog("[API INSERT]", "", "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error", Visibility.Collapsed));
                             }
+
+                            if (SettingsManager.InventoryConsumptionActive)
+                            {
+                                idx = "";
+                                Visibility separatorVisibility;
+                                for (int i = 0; i < scanList.Count; i++)
+                                {
+                                    //Task<(string serial, string message, string statusCode, string typeMsj)>
+                                    var result = await InventoryCls.DoConsume(scanList.ElementAtOrDefault(i));
+                                    ////Dispatcher.Invoke(() => AddLog("[API CONSUME]", serial, "CONSUMPTION ERROR", StatusMessage, "", "ERROR"));
+                                    
+                                    if(i == scanList.Count - 1){ 
+                                        separatorVisibility = Visibility.Visible; 
+                                    }else{ 
+                                        separatorVisibility = Visibility.Collapsed;
+                                    }
+
+                                    Dispatcher.Invoke(() => AddLog("[API CONSUME]", result.serial, result.message, result.ToString().Trim(), "", result.typeMsj, separatorVisibility));
+                                }
+                            }
+
                             scanList.Clear();
                             txtScanCode.Text = "";
                             txtLastScan.Text = $@"Último Escaneo: {sLastData.Replace("Escaneado:", "")}";
                             txtCompCount.Text = "";
                             CompCount = 0;
+                            LoadInit(true);
+                            ventana?.MostrarOverlay(false);
                         }
-                        ventana?.MostrarOverlay(false);
                         //**** Si no pasa (que el Dynalab no arroje el PASS)
                     }
                     else if (string.Equals(respuesta, "RESET", StringComparison.OrdinalIgnoreCase))
                     {
-                        Dispatcher.Invoke(() => AddLog("[PLC RESET]", serial, "RESET RECIBIDO", "-", null, "SystemInfo", true));
+                        Dispatcher.Invoke(() => AddLog("[PLC RESET]", serial, "RESET RECIBIDO", "-", null, "SystemInfo", Visibility.Collapsed));
+                        ventana?.MostrarOverlay(false);
                         RestartApp();
                     }
                     else
@@ -207,7 +250,7 @@ namespace wpfGMTraceability.UserControls
             }
             catch (Exception Ex)
             {
-                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-", Ex.Message, "SystemError"));
+                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-", Ex.Message, "SystemError",Visibility.Collapsed));
                 ventana?.MostrarOverlay(false);
             }
         }
@@ -239,7 +282,7 @@ namespace wpfGMTraceability.UserControls
                     }
 
                     Dispatcher.Invoke(() =>
-                        AddLog("[SERIAL CHECK]", serial, Res, result.statusCode.ToString().Trim(), null, ResLogType)
+                        AddLog("[SERIAL CHECK]", serial, Res, result.statusCode.ToString().Trim(), null, ResLogType, Visibility.Collapsed)
                     );
 
                     if (Res == "OK")
@@ -248,12 +291,12 @@ namespace wpfGMTraceability.UserControls
                     }
                     else if (Res == "NO_OK")
                     {
-                        Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_OK", result.statusCode.ToString().Trim(), null, "Error"));
+                        Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_OK", result.statusCode.ToString().Trim(), null, "Error", Visibility.Collapsed));
                         return (byte)0;
                     }
                     else
                     {
-                        Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_RESPONSE", result.statusCode.ToString().Trim(), $" {result.content.ToString().Substring(0, 64)}", "SystemError"));
+                        Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_RESPONSE", result.statusCode.ToString().Trim(), $" {result.content.ToString().Substring(0, 64)}", "SystemError", Visibility.Collapsed));
                         return (byte)0;
                     }
                 }
@@ -264,26 +307,19 @@ namespace wpfGMTraceability.UserControls
             }
             catch (Exception Ex)
             {
-                Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_RESPONSE", "", $" {Ex.ToString()}", "SystemError"));
+                Dispatcher.Invoke(() => AddLog("[SERIAL CHECK]", serial, "NO_RESPONSE", "", $" {Ex.ToString()}", "SystemError", Visibility.Collapsed));
                 return (byte)0;
             }
         }
-        public async Task LoadBOMDataAsync()
+        private void OpenRequestBoxWindow(string _serial, List<object> _insufficientParts)
         {
-            BOMInventoryData = await ApiCalls.GetStationDataAsync();
-            try
-            {
-                StationTitle?.Invoke(BOMInventoryData.Station.ToString());
-                dgBOM.ItemsSource = BOMInventoryData.Parts;
-                Comp = BOMInventoryData.Comp;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }        
+            _session.ReleaseOwner(this);
+            var modal = new RequestBoxWindow(_session, _insufficientParts, BOMInventoryData, _serial);
+            modal.Owner = Window.GetWindow(this);
+            modal.ShowDialog();
+            _session.AssignOwner(this, OnSerialData);
+        }
         #endregion
-
         #region Liberación de recursos
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
@@ -291,9 +327,8 @@ namespace wpfGMTraceability.UserControls
             writer.ClosePort();
         }
         #endregion
-
         #region Logging y diagnóstico
-        public void AddLog(string titleItem, string serial, string apiResponse, string apiStatus, string mensaje, string tipo, bool persistente = false)
+        public void AddLog(string titleItem, string serial, string apiResponse, string apiStatus, string mensaje, string tipo, Visibility separatorVisible)
         {
             var nuevoLog = new ScanLogItem
             {
@@ -304,14 +339,13 @@ namespace wpfGMTraceability.UserControls
                 Msj = mensaje,
                 MsjType = tipo,
                 Timestamp = DateTime.Now,
-                Persistent = persistente
+                SeparatorVisible = separatorVisible
             };
 
             logItems.Add(nuevoLog);
             lbLog.ScrollIntoView(nuevoLog);
         }
         #endregion
-
         #region Utilidades
         private void RestartApp()
         {
@@ -401,11 +435,10 @@ namespace wpfGMTraceability.UserControls
         private void CleanLogs()
         {
             var haceUnMinuto = DateTime.Now.AddMinutes(-5);
-            var recientes = logItems.Where(log => log.Persistent || log.Timestamp >= haceUnMinuto).ToList();
-
+            var recientes = logItems.Where(log => log.Timestamp >= haceUnMinuto).ToList();
             logItems.Clear();
-            foreach (var log in recientes)
-                logItems.Add(log);
+            //foreach (var log in recientes)
+            //    logItems.Add(log);
         }
         #endregion
     }

@@ -116,7 +116,7 @@ namespace wpfGMTraceability.UserControls
                     }
 
                     Dispatcher.Invoke(() =>
-                        AddLog("[SERIAL CHECK]",serial,Res,result.statusCode.ToString().Trim(),null,ResLogType)
+                        AddLog("[SERIAL CHECK]",serial,Res,result.statusCode.ToString().Trim(),null,ResLogType, Visibility.Collapsed)
                     );
 
                     string serialclean = serial.Replace("\r", "").Replace("\n", "");
@@ -144,20 +144,20 @@ namespace wpfGMTraceability.UserControls
                             if (resInsert.statusCode == (int)HttpStatusCode.OK)
                             {
                                 Dispatcher.Invoke(() =>
-                                    AddLog("[API INSERT]",serialclean,"INSERT OK",resInsert.statusCode.ToString().Trim(), null, "OK")
+                                    AddLog("[API INSERT]",serialclean,"INSERT OK",resInsert.statusCode.ToString().Trim(), null, "OK", Visibility.Visible)
                                 );
                             }
                             else
                             {
                                 Dispatcher.Invoke(() =>
-                                    AddLog("[API INSERT]", serialclean, "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error")
+                                    AddLog("[API INSERT]", serialclean, "INSERT FALLÓ", resInsert.statusCode.ToString().Trim(), null, "Error", Visibility.Collapsed)
                                 );
                             }
                         }
                         else if (string.Equals(respuesta, "RESET", StringComparison.OrdinalIgnoreCase))
                         {
                             Dispatcher.Invoke(() =>
-                                AddLog("[PLC RESET]", serialclean, "RESET RECIBIDO", "-", null, "SystemInfo", true)
+                                AddLog("[PLC RESET]", serialclean, "RESET RECIBIDO", "-", null, "SystemInfo", Visibility.Collapsed)
                             );
 
                             RestartApp();
@@ -165,7 +165,7 @@ namespace wpfGMTraceability.UserControls
                         else
                         {
                             Dispatcher.Invoke(() =>
-                                AddLog("[API INSERT]", serialclean, "-", "-", "Sin respuesta válida (PASS/RESET) desde el equipo", "Error")
+                                AddLog("[API INSERT]", serialclean, "-", "-", "Sin respuesta válida (PASS/RESET) desde el equipo", "Error", Visibility.Collapsed)
                             );
                         }
                     }
@@ -182,14 +182,14 @@ namespace wpfGMTraceability.UserControls
                 else
                 {
                     Dispatcher.Invoke(() =>
-                        AddLog("[SERIAL CHECK]", serial,"NO_RESPONSE",result.statusCode.ToString().Trim(), null, "SystemError"));
+                        AddLog("[SERIAL CHECK]", serial,"NO_RESPONSE",result.statusCode.ToString().Trim(), null, "SystemError", Visibility.Collapsed));
 
                     await writer.WriteAsync("NO_RESPONSE\n");
                 }
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-",ex.Message, "SystemError"));
+                Dispatcher.Invoke(() => AddLog("[SYSTEM ERROR]", serial, "-", "-",ex.Message, "SystemError", Visibility.Collapsed));
             }
             finally
             {
@@ -201,11 +201,10 @@ namespace wpfGMTraceability.UserControls
         private void CleanLogs()
         {
             var haceUnMinuto = DateTime.Now.AddMinutes(-5);
-            var recientes = logItems.Where(log => log.Persistent || log.Timestamp >= haceUnMinuto).ToList();
-
+            var recientes = logItems.Where(log => log.Timestamp >= haceUnMinuto).ToList();
             logItems.Clear();
-            foreach (var log in recientes)
-                logItems.Add(log);
+            //foreach (var log in recientes)
+            //    logItems.Add(log);
         }
         #endregion
 
@@ -218,7 +217,7 @@ namespace wpfGMTraceability.UserControls
         #endregion
 
         #region Logging
-        public void AddLog(string titleItem, string serial, string apiResponse, string apiStatus, string mensaje, string tipo, bool persistente = false)
+        public void AddLog(string titleItem, string serial, string apiResponse, string apiStatus, string mensaje, string tipo, Visibility separatorVisible)
         {
             var nuevoLog = new ScanLogItem
             {
@@ -229,7 +228,7 @@ namespace wpfGMTraceability.UserControls
                 Msj = mensaje,
                 MsjType = tipo,
                 Timestamp = DateTime.Now,
-                Persistent = persistente
+                SeparatorVisible = separatorVisible
             };
 
             logItems.Add(nuevoLog);

@@ -126,13 +126,29 @@ namespace wpfGMTraceability
         }
         public void MostrarOverlay(bool mostrar, bool showLoadingIcon = false)
         {
-            if (showLoadingIcon) {
-                LoadingOverlay.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
-            }
-            else
+            switch (mostrar)
             {
-                OverlayOscuro.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
-            }                
+                case true:
+                    if (showLoadingIcon)
+                    {
+                        LoadingOverlay.Visibility = Visibility.Visible;
+                        OverlayOscuro.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        LoadingOverlay.Visibility = Visibility.Collapsed;
+                        OverlayOscuro.Visibility = Visibility.Visible;
+                    }
+                    break;
+
+                case false:
+                    OverlayOscuro.Visibility = Visibility.Collapsed;
+                    LoadingOverlay.Visibility = Visibility.Collapsed;
+                    break;
+
+                default:
+                    break;
+            }
         }  
         #endregion
         private void Main_Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

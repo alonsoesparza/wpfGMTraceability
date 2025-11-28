@@ -21,7 +21,6 @@ namespace wpfGMTraceability.Helpers
             else
                 return Brushes.Green;
         }
-
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();

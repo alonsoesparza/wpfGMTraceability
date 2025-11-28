@@ -46,8 +46,14 @@ namespace wpfGMTraceability.Views
             .ToList();
             lbMissingParts.ItemsSource = MissingPart.ToList();
             BOMInventoryData = bOMInventoryData;
+            
+            
+
             _session = session;
             _session.AssignOwner(this, OnModalData);
+
+
+
             FGSerial = fGSerial;
         }
         private void RequestBox_Window_Loaded(object sender, RoutedEventArgs e)
@@ -55,7 +61,6 @@ namespace wpfGMTraceability.Views
             lbLog.ItemsSource = logItems;
         }
         #endregion
-
         #region Eventos del sistema
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
@@ -63,7 +68,6 @@ namespace wpfGMTraceability.Views
             this.Close();
         }
         #endregion
-
         #region Eventos de comunicación
         public void OnModalData(object sender, string data)
         {
@@ -84,7 +88,6 @@ namespace wpfGMTraceability.Views
             });
         }
         #endregion
-
         #region Funciones de negocio / lógica principal
         private async void ProcessRMSerialNumber(string RMserial)
         {
@@ -111,7 +114,7 @@ namespace wpfGMTraceability.Views
 
                     if (result.content != null)
                     {
-                        Dispatcher.Invoke(() => AddLog($"{RMserial} / {ResContent} / {StatusMessage}", "OK"));
+                        Dispatcher.Invoke(() => AddLog("[BOX INSERT]", RMserial, StatusMessage, StatusCode.ToString(), "-", "OK", Visibility.Visible));
 
                         var leftPartsToRequestBox = MissingPart.ToList()
                             .Where(p => p.BomPart.Trim() != rmPN)
@@ -123,34 +126,36 @@ namespace wpfGMTraceability.Views
                     }
                     else {
                         //**** Mensaje de error, API no responde
-                        Dispatcher.Invoke(() => AddLog($"{RMserial} / {ResContent} / {StatusMessage}", "ERROR"));
+                        Dispatcher.Invoke(() => AddLog("[BOX INSERT ERROR]", RMserial, StatusMessage, StatusCode.ToString(), "-", "Error", Visibility.Visible));
                     }
                 }
                 else {
                     //**** Mensaje de error, NP no esta dentro del BOM
-                    Dispatcher.Invoke(() => AddLog($"El código escaneado no corresponde a ninguna parte faltante en el BOM, por favor intente de nuevo.", "ERROR"));
+                    Dispatcher.Invoke(() => AddLog("[ERROR]", RMserial, "El código escaneado no corresponde a ninguna parte faltante en el BOM, por favor intente de nuevo.", "-", "-", "Warning", Visibility.Visible));
                 }
             }
             else {
                 //**** Mensaje de error, no es un serial válido
-                Dispatcher.Invoke(() => AddLog($"El código escaneado no es válido, por favor intente de nuevo.", "ERROR"));
+                Dispatcher.Invoke(() => AddLog("[ERROR]", RMserial, "El código escaneado no es válido, por favor intente de nuevo.", "-", "-", "Warning", Visibility.Visible));
             }
         }
         #endregion
-
         #region Liberación de recursos
 
         #endregion
-
         #region Logging y diagnóstico
-        public void AddLog(string mensaje, string tipo, bool persistente = false)
+        public void AddLog(string titleItem, string serial, string apiResponse, string apiStatus, string mensaje, string tipo, Visibility separatorVisible)
         {
             var nuevoLog = new ScanLogItem
             {
+                Title = titleItem,
+                Serial = serial,
+                APIResponse = apiResponse,
+                APIStatus = apiStatus,
                 Msj = mensaje,
                 MsjType = tipo,
                 Timestamp = DateTime.Now,
-                Persistent = persistente
+                SeparatorVisible = separatorVisible
             };
 
             logItems.Add(nuevoLog);
