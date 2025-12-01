@@ -135,6 +135,14 @@ HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="BtnPlayVideo_Click
                 <TextBlock FontWeight="SemiBold" FontSize="16" Text="Video" Margin="0 -5 0 0"/>
             </StackPanel>
         </Button>
+        <!-- **** Box Button **** -->
+        <Button x:Name="BtnAddBoxes" Style="{StaticResource MaterialDesignFloatingActionButton}" Height="75" Width="75" BorderBrush="{x:Null}" Background="Gray" Grid.Column="5" Grid.Row="3" Grid.RowSpan="2" Margin="0 0 25 0" Foreground="White" 
+HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="BtnAddBoxes_Click">
+            <StackPanel Orientation="Vertical">
+                <materialDesign:PackIcon Kind="BoxAdd" Width="46" Height="46" Foreground="LimeGreen" HorizontalAlignment="Center"/>
+                <TextBlock FontWeight="SemiBold" FontSize="16" Text="Material" Margin="0 -5 0 0"/>
+            </StackPanel>
+        </Button>
         <!--Log de Actividad-->
         <materialDesign:Card Margin="10 10 10 10" Grid.ColumnSpan="4" Grid.Row="5" Grid.RowSpan="6" Grid.Column="0" Padding="0" materialDesign:ElevationAssist.Elevation="Dp8">
             <Grid>

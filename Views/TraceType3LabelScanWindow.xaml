@@ -6,24 +6,23 @@
         xmlns:local="clr-namespace:wpfGMTraceability.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" WindowStartupLocation="CenterScreen"
         Style="{StaticResource MaterialDesignWindow}" mc:Ignorable="d"
-        Title="Label Scan Window" Height="450" Width="600" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Window_Loaded">
+        Title="Label Scan Window" Height="450" Width="650" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid>
         <materialDesign:Card Margin="10" UniformCornerRadius="10">
             <Grid>
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="500">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="610">
                     <TextBlock Text="Escanear etiqueta" FontSize="24" HorizontalAlignment="Center" Margin="0 0 0 20"
                                Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
 
-                    <materialDesign:Card materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" 
-                                         BorderThickness="2" Margin="10 5 5 5" BorderBrush="Navy" Width="auto" Height="auto" Background="Blue">
+                    <materialDesign:Card materialDesign:ElevationAssist.Elevation="Dp8" UniformCornerRadius="8" BorderThickness="2" Margin="10 5 5 5" BorderBrush="Navy" Width="auto" Height="auto" Background="Blue">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <materialDesign:PackIcon Width="32" Height="32" Kind="Label" Foreground="Gray" VerticalAlignment="Center" />
-                            <TextBlock x:Name="txtScanCode" FontWeight="SemiBold" FontSize="40" Foreground="White" Text="" Margin="2 0 2 0" />
+                            <TextBlock x:Name="txtScanCode" FontWeight="SemiBold" FontSize="24" Foreground="White" Text="" Margin="2 0 2 0" />
                         </StackPanel>
                     </materialDesign:Card>
                     <TextBlock x:Name="txtError" Text="Error: etiqueta inválida" Foreground="Red" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" Visibility="Collapsed" />
 
-                    <TextBlock x:Name="txtErrorMsg" Text=".." Foreground="Gray" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" TextWrapping="Wrap" Visibility="Collapsed"/>
+                    <!--<TextBlock x:Name="txtErrorMsg" Text=".." Foreground="Gray" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" TextWrapping="Wrap" Visibility="Collapsed"/>-->
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 40 0 0">
                         <Button x:Name="BtnCancel" Content="Cancelar" FontSize="20" BorderThickness="3" BorderBrush="#6002ee" Height="60" Width="120" Margin="10 0" Style="{StaticResource MaterialDesignFlatButton}" Click="BtnCancel_Click" />

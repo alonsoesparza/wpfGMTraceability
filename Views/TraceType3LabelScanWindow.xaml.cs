@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
@@ -76,16 +77,17 @@ namespace wpfGMTraceability.Views
             {
                 string sLastData = "";
                 sLastData = txtScanCode.Text;
-                txtScanCode.Text = $"{data}";
+                txtScanCode.Text = $"{data.Replace("\r", "").Replace("\n", "").Trim()}";
             });
             FinishAction();
         }
         #endregion
+        #region Utilidades
         private async void FinishAction()
         {
             txtError.Visibility = Visibility.Collapsed;
-            txtErrorMsg.Visibility = Visibility.Collapsed;
-            LabelScanCode = txtScanCode.Text.Replace("\r", "").Replace("\n", "").Trim();       
+            //txtErrorMsg.Visibility = Visibility.Collapsed;
+            LabelScanCode = txtScanCode.Text;
 
             byte evalSerialAPI = await CheckSerialNumberAsync(LabelScanCode);
             if (evalSerialAPI == 1)
@@ -96,7 +98,7 @@ namespace wpfGMTraceability.Views
             else
             {
                 txtError.Visibility = Visibility.Visible;
-                txtErrorMsg.Visibility = Visibility.Visible;
+                //txtErrorMsg.Visibility = Visibility.Visible;
             }
         }
         private async Task<byte> CheckSerialNumberAsync(string serial)
@@ -152,7 +154,8 @@ namespace wpfGMTraceability.Views
         }
         public void AddLog(string msj)
         {
-            txtErrorMsg.Text = msj;
+            //txtErrorMsg.Text = msj;
         }
+        #endregion
     }
 }

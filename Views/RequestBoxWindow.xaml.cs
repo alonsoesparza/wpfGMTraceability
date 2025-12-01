@@ -30,7 +30,7 @@ namespace wpfGMTraceability.Views
         #region Inicialización y carga
         StationData BOMInventoryData;
         List<MissingPartToBoxRequest> MissingPart;
-        string FGSerial;
+        //string FGSerial;
         private readonly SerialPortSession _session;
         public event EventHandler ShowLoadOverlay;
         public event EventHandler HideLoadOverlay;
@@ -45,16 +45,12 @@ namespace wpfGMTraceability.Views
             })
             .ToList();
             lbMissingParts.ItemsSource = MissingPart.ToList();
-            BOMInventoryData = bOMInventoryData;
-            
-            
+            BOMInventoryData = bOMInventoryData;            
 
             _session = session;
             _session.AssignOwner(this, OnModalData);
 
-
-
-            FGSerial = fGSerial;
+            //FGSerial = fGSerial;
         }
         private void RequestBox_Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -114,15 +110,29 @@ namespace wpfGMTraceability.Views
 
                     if (result.content != null)
                     {
-                        Dispatcher.Invoke(() => AddLog("[BOX INSERT]", RMserial, StatusMessage, StatusCode.ToString(), "-", "OK", Visibility.Visible));
+                        switch (result.statusCode)
+                        {
+                            case 200:
+                                Dispatcher.Invoke(() => AddLog("[BOX INSERT]", RMserial, StatusMessage, StatusCode.ToString(), "-", "OK", Visibility.Visible));
 
-                        var leftPartsToRequestBox = MissingPart.ToList()
-                            .Where(p => p.BomPart.Trim() != rmPN)
-                            .ToList();
+                                var leftPartsToRequestBox = MissingPart.ToList()
+                                    .Where(p => p.BomPart.Trim() != rmPN)
+                                    .ToList();
 
-                        MissingPart = leftPartsToRequestBox;
-                        lbMissingParts.ItemsSource = leftPartsToRequestBox;
-                        if(lbMissingParts.Items.Count == 0) { imgQRClose.Visibility = Visibility.Visible; } else { imgQRClose.Visibility = Visibility.Hidden; }
+                                MissingPart = leftPartsToRequestBox;
+                                lbMissingParts.ItemsSource = leftPartsToRequestBox;
+                                if (lbMissingParts.Items.Count == 0) { imgQRClose.Visibility = Visibility.Visible; } else { imgQRClose.Visibility = Visibility.Hidden; }
+                                break;
+
+                            case 409:
+                                Dispatcher.Invoke(() => AddLog("[BOX INSERT]", RMserial, $"SERIE YA ESCANEADA{StatusMessage}", StatusCode.ToString(), "-", "Warning", Visibility.Visible));
+                                break;
+
+                            default:
+                                //**** Mensaje de error, API no responde
+                                Dispatcher.Invoke(() => AddLog("[BOX INSERT ERROR]", RMserial, StatusMessage, StatusCode.ToString(), "-", "Error", Visibility.Visible));
+                                break;
+                        }
                     }
                     else {
                         //**** Mensaje de error, API no responde

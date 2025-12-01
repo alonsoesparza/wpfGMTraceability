@@ -103,6 +103,23 @@ namespace wpfGMTraceability.UserControls
 
             ventana?.MostrarOverlay(false);
         }
+        private void BtnAddBoxes_Click(object sender, RoutedEventArgs e)
+        {
+            var ventana = Window.GetWindow(this) as MainWindow;
+            ventana?.MostrarOverlay(true);
+            try
+            {
+                var InsufficientParts = InventoryCls.CheckForSufficientStock();
+                OpenRequestBoxWindow("", InsufficientParts);
+                ventana?.MostrarOverlay(false);
+            }
+            catch (Exception Ex)
+            {
+                Console.Write(Ex.Message);
+                ventana?.MostrarOverlay(false);
+            }
+            LoadInit(true);
+        }
         #endregion    
         #region Eventos de comunicación
         private void OnSerialData(object sender, string data)
@@ -131,11 +148,7 @@ namespace wpfGMTraceability.UserControls
                     ventana?.MostrarOverlay(true);
                     try
                     {
-                        _session.ReleaseOwner(this);
-                        var modal = new RequestBoxWindow(_session, InsufficientParts, BOMInventoryData, serial);
-                        modal.Owner = Window.GetWindow(this);
-                        modal.ShowDialog();
-                        _session.AssignOwner(this, OnSerialData);
+                        OpenRequestBoxWindow(serial, InsufficientParts);
                     }
                     catch (Exception Ex)
                     {
@@ -143,8 +156,9 @@ namespace wpfGMTraceability.UserControls
                     }
                     ventana?.MostrarOverlay(false);
                     //*** La idea es que si sigue faltando material, no nos deje continuar.
-                    RestartApp();
-                    return;
+                    //RestartApp();
+                    //return;
+                    LoadInit(true);
                 }
             }
 
@@ -183,10 +197,13 @@ namespace wpfGMTraceability.UserControls
                 if (CompCount == Comp)
                 {
                     ShowLoadOverlay?.Invoke(this, EventArgs.Empty);
-                    var respuesta = await writer.WriteAndWaitForPassOrResetAsync(
-                        "OK",
-                        overallTimeoutMs: null
-                    );
+                    //****Se tiene que hacer esto del _session,que aparentemente no tiene razon aqui, por que si alguien escanea cuando la app
+                    //****Espera al Dynalab, se sale de la espera sin recibir nada del Dynalab, por que la app siguie "escuchando" al escaner,
+                    //****Con esto, el puerto siguie abierto, pero no "escucha" al escanner, hasta que el Synalab mande señal
+                    _session.ReleaseOwner(this);
+                    var respuesta = await writer.WriteAndWaitForPassOrResetAsync("OK", overallTimeoutMs: null);
+                    //****Aqui volvemos a "escuchar" al escaner
+                    _session.AssignOwner(this, OnSerialData);
                     HideLoadOverlay?.Invoke(this, EventArgs.Empty);
 
                     if (string.Equals(respuesta, "PASS", StringComparison.OrdinalIgnoreCase))
@@ -330,6 +347,14 @@ namespace wpfGMTraceability.UserControls
                 });
 
             return SufficientParts.Cast<object>().ToList();
+        }
+        private void OpenRequestBoxWindow(string _serial, List<object> _insufficientParts)
+        {
+            _session.ReleaseOwner(this);
+            var modal = new RequestBoxWindow(_session, _insufficientParts, BOMInventoryData, _serial);
+            modal.Owner = Window.GetWindow(this);
+            modal.ShowDialog();
+            _session.AssignOwner(this, OnSerialData);
         }
         #endregion
         #region Liberación de recursos
